@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model SocialNetworks {
+  id         String   @id @default(cuid())
+  name       String   @unique
+  url        String
+  icon       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
