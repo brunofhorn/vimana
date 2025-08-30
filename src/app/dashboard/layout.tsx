@@ -2,7 +2,7 @@
 
 import { SidebarContent, SidebarHeader, SidebarItem, SidebarSection, SidebarToggle, SimpleSidebar } from "@/components/sidebar";
 import { useState } from "react";
-import { FiHome, FiSettings, FiVideo } from "react-icons/fi";
+import { FiHome, FiSettings, FiShare2, FiVideo } from "react-icons/fi";
 
 export default function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const [open, setOpen] = useState<boolean>(false)
@@ -17,11 +17,17 @@ export default function DashboardLayout({ children }: Readonly<{ children: React
 
                     <SidebarContent>
                         <SidebarSection>
-                            <SidebarItem icon={<FiHome />} href="/" active>
+                            <SidebarItem icon={<FiHome />} href="/dashboard" active>
                                 Dashboard
                             </SidebarItem>
-                            <SidebarItem icon={<FiVideo />} href="/videos">
-                                Vídeos
+                            <SidebarItem icon={<FiVideo />} href="/dashboard/videos/add">
+                                Add Video
+                            </SidebarItem>
+                            <SidebarItem icon={<FiVideo />} href="/dashboard/videos">
+                                Listar Videos
+                            </SidebarItem>
+                            <SidebarItem icon={<FiShare2 />} href="/dashboard/social">
+                                Redes Sociais
                             </SidebarItem>
                         </SidebarSection>
 

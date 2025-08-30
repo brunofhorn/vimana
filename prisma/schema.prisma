@@ -15,4 +15,35 @@ model SocialNetworks {
   icon       String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  video_links VideoLink[]
+}
+
+model Video {
+  id              String      @id @default(cuid())
+  title           String
+  description     String?
+  tags            Json?
+  is_repost       Boolean     @default(false)
+  is_sponsored    Boolean     @default(false)
+  cover_image_url String?
+  raw_video_url   String?
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+  links           VideoLink[]
+}
+
+model VideoLink {
+  id               String   @id @default(cuid())
+  video_id         String
+  socialnetwork_id String
+  url              String
+  posted_at        DateTime
+
+  video          Video          @relation(fields: [video_id], references: [id], onDelete: Cascade)
+  social_network SocialNetworks @relation(fields: [socialnetwork_id], references: [id], onDelete: Restrict)
+
+  @@unique([video_id, socialnetwork_id])
+  @@index([video_id])
+  @@index([socialnetwork_id])
 }
