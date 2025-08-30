@@ -5,12 +5,12 @@ import { Card, CardContent } from "@/components/card";
 import { Input } from "@/components/input";
 import { Label } from "@/components/label";
 import { useEffect, useState } from "react";
-import { SocialNetworkCard } from "./SocialNetworkCard";
 import { IconSelect } from "@/components/icon-selector";
 import { SocialNetworkData } from "@/interfaces/social-networks";
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { SocialNetworksTable } from "./SocialNetworkTable";
 
 const schema = z.object({
     name: z.string().min(2, "Informe um nome válido"),
@@ -97,7 +97,7 @@ export default function Social() {
 
             <Card>
                 <CardContent className="mt-6">
-                    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row gap-4 items-center">
+                    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row gap-4 items-start">
                         <div className="flex flex-col flex-1 gap-3">
                             <Label htmlFor="name">Nome</Label>
                             <Input
@@ -153,14 +153,11 @@ export default function Social() {
                 </CardContent>
             </Card>
 
-            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {socialNetworks?.map((network) => (
-                    <SocialNetworkCard
-                        key={network.name} // use um id real se tiver
-                        network={network}
-                        onDelete={() => { }}
-                    />
-                ))}
+            <div className="mt-6">
+                <SocialNetworksTable
+                    data={socialNetworks}
+                    onChange={(next) => setSocialNetworks(next)}
+                />
             </div>
 
             {socialNetworks?.length === 0 && (

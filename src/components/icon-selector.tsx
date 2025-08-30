@@ -22,7 +22,8 @@ import {
   SiX,
   SiThreads,
   SiFacebook,
-  SiKuaishou, // Kwai
+  SiKuaishou,
+  SiSnapchat, // Kwai
 } from "react-icons/si"
 import { FiVideo } from "react-icons/fi"
 
@@ -43,6 +44,7 @@ const SOCIAL_ITEMS = [
   { label: "Twitter/X", value: "Twitter" },
   { label: "Threads", value: "Threads" },
   { label: "Facebook", value: "Facebook" },
+  { label: "Snapchat", value: "Snapchat" },
   { label: "Kwai", value: "Kwai" },
   { label: "Vídeo", value: "Video" },
 ] as const
@@ -57,6 +59,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Twitter: SiX,     // se preferir X, pode trocar por SiX (se existir na sua versão)
   Threads: SiThreads,
   Facebook: SiFacebook,
+  Snapchat: SiSnapchat,
   Kwai: SiKuaishou,       // Kwai = Kuaishou
   Video: FiVideo,         // fallback genérico de vídeo
 }
