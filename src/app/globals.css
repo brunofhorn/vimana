@@ -1,7 +1,9 @@
 /* globals.css — Next.js + Tailwind v4 */
 @import "tailwindcss";
+@import "react-datepicker/dist/react-datepicker.css";
 
 /* ===================== Tokens (Claro) ===================== */
+
 :root {
   /* base */
   --background: 0 0% 100%;

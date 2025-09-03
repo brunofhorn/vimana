@@ -1,13 +1,3 @@
-interface VideoSocialNetwork {
-  id: string;
-  url: string;
-  socialNetwork: {
-    id: string;
-    name: string;
-    icon: string;
-  };
-}
-
 export interface Video {
   id: string;
   title: string;

@@ -1,12 +1,13 @@
-"use client" 
+"use client"
 
 import { Video } from "@/interfaces/videos"
 import { VideosTable } from "./VideoTable"
 import { useEffect, useState } from "react"
+import { SocialNetworkData } from "@/interfaces/social-networks"
 
 export default function Videos() {
     const [videos, setVideos] = useState<Video[]>([])
-    const [searchTerm, setSearchTerm] = useState("")
+    const [socialNetworks, setSocialNetworks] = useState<SocialNetworkData[]>([])
 
     async function fetchVideos() {
         try {
@@ -23,19 +24,33 @@ export default function Videos() {
         }
     }
 
+    async function fetchSocialNetworks() {
+        try {
+            const response = await fetch("/api/social", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            })
+
+            if (!response.ok) throw new Error("Falha ao buscar redes sociais")
+            const data = (await response.json()) as SocialNetworkData[]
+            setSocialNetworks(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
     useEffect(() => {
         fetchVideos()
+        fetchSocialNetworks()
     }, [])
 
     return (
         <VideosTable
-            data={videos}
-            query={searchTerm}
+            videos={videos}
+            socialNetworks={socialNetworks}
             onDelete={async (video) => {
                 const res = await fetch(`/api/video/${video.id}`, { method: "DELETE" })
                 if (!res.ok) throw new Error("Falha ao excluir vídeo")
-                // exemplo de atualização local:
-                // setVideos((prev) => prev.filter((v) => v.id !== video.id))
             }}
         />
     )

@@ -1,0 +1,165 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
+
+type Params = { params: { id: string } };
+
+function toDate(value: unknown): Date {
+  if (value instanceof Date) return value;
+  if (typeof value === "string") {
+    // aceita dd/MM/yyyy
+    const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (m) return new Date(`${m[3]}-${m[2]}-${m[1]}T00:00:00.000Z`);
+    const d = new Date(value);
+    if (!isNaN(d.getTime())) return d;
+  }
+  throw new Error("Invalid date");
+}
+
+const LinkInputSchema = z.object({
+  id: z.string().optional(),
+  socialnetwork_id: z.string().min(1, "Selecione a rede"),
+  url: z.string().url("URL inválida"),
+  posted_at: z.preprocess(toDate, z.date()),
+});
+
+const BodySchema = z.object({
+  links: z.array(LinkInputSchema),
+});
+
+/** Carrega as postagens do vídeo (com dados da rede) */
+export async function GET(_req: Request, { params }: Params) {
+  try {
+    const videoId = params.id;
+    const links = await prisma.videoLink.findMany({
+      where: { video_id: videoId },
+      include: { social_network: true },
+      orderBy: { posted_at: "desc" },
+    });
+    return NextResponse.json(links);
+  } catch (err) {
+    console.error("[VIDEO_LINKS][GET]", err);
+    return NextResponse.json(
+      { message: "Erro ao buscar links" },
+      { status: 500 }
+    );
+  }
+}
+
+/** Substitui o conjunto de links do vídeo por `links` (create/update/delete) */
+export async function PUT(req: Request, { params }: Params) {
+  try {
+    const videoId = params.id;
+    const json = await req.json();
+    const { links } = BodySchema.parse(json);
+
+    // garante vídeo existente
+    const video = await prisma.video.findUnique({ where: { id: videoId } });
+    if (!video) {
+      return NextResponse.json(
+        { message: "Vídeo não encontrado" },
+        { status: 404 }
+      );
+    }
+
+    // transação: delete removidos + upsert/updates + creates
+    const updated = await prisma.$transaction(async (tx) => {
+      const existing = await tx.videoLink.findMany({
+        where: { video_id: videoId },
+        select: { id: true, socialnetwork_id: true },
+      });
+
+      const incomingIds = new Set(links.filter((l) => l.id).map((l) => l.id!));
+      const toDeleteIds = existing
+        .filter((e) => !incomingIds.has(e.id))
+        .map((e) => e.id);
+
+      if (toDeleteIds.length) {
+        await tx.videoLink.deleteMany({ where: { id: { in: toDeleteIds } } });
+      }
+
+      // checar duplicidades (video, socialnetwork) no payload
+      const seen = new Set<string>();
+      for (const l of links) {
+        const key = `${videoId}::${l.socialnetwork_id}`;
+        if (seen.has(key)) {
+          return Promise.reject(
+            new Error("Redes duplicadas no formulário para o mesmo vídeo.")
+          );
+        }
+        seen.add(key);
+      }
+
+      // Atualiza/cria
+      for (const l of links) {
+        if (l.id) {
+          // evitar colisão com outra linha do mesmo vídeo/rede
+          const other = await tx.videoLink.findFirst({
+            where: {
+              video_id: videoId,
+              socialnetwork_id: l.socialnetwork_id,
+              id: { not: l.id },
+            },
+            select: { id: true },
+          });
+          if (other) {
+            return Promise.reject(
+              new Error("Já existe uma postagem para essa rede neste vídeo.")
+            );
+          }
+
+          await tx.videoLink.update({
+            where: { id: l.id },
+            data: {
+              socialnetwork_id: l.socialnetwork_id,
+              url: l.url,
+              posted_at: l.posted_at,
+            },
+          });
+        } else {
+          // criar nova (respeita @@unique(video_id, socialnetwork_id))
+          await tx.videoLink.create({
+            data: {
+              video_id: videoId,
+              socialnetwork_id: l.socialnetwork_id,
+              url: l.url,
+              posted_at: l.posted_at,
+            },
+          });
+        }
+      }
+
+      const current = await tx.videoLink.findMany({
+        where: { video_id: videoId },
+        include: { social_network: true },
+        orderBy: { posted_at: "desc" },
+      });
+      return current;
+    });
+
+    return NextResponse.json({ videoId, links: updated });
+  } catch (err: any) {
+    console.error("[VIDEO_LINKS][PUT]", err);
+
+    if (err?.name === "ZodError") {
+      return NextResponse.json(
+        { message: "Dados inválidos", issues: err.issues },
+        { status: 400 }
+      );
+    }
+    if (err?.code === "P2002") {
+      // quebra de unique (video_id, socialnetwork_id)
+      return NextResponse.json(
+        { message: "Já existe uma postagem para essa rede neste vídeo." },
+        { status: 409 }
+      );
+    }
+    return NextResponse.json(
+      { message: err?.message ?? "Erro ao salvar" },
+      { status: 500 }
+    );
+  }
+}

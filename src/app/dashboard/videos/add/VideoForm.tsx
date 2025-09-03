@@ -209,12 +209,33 @@ export const VideoForm = ({ onSuccess, socialNetworks }: VideoFormProps) => {
               rows={3}
             />
           </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div>
+              <Label>Tags</Label>
+              <TagsInput value={tags} onChange={setTags} />
+            </div>
+            <div>
+              <Label htmlFor="cover">Capa (link do Drive)</Label>
+              <Input
+                id="cover"
+                type="url"
+                value={coverImageUrl}
+                onChange={(e) => setCoverImageUrl(e.target.value)}
+                placeholder="https://drive.google.com/..."
+              />
+            </div>
 
-          <div>
-            <Label>Tags</Label>
-            <TagsInput value={tags} onChange={setTags} />
+            <div>
+              <Label htmlFor="raw">Vídeo bruto (link do Drive)</Label>
+              <Input
+                id="raw"
+                type="url"
+                value={rawVideoUrl}
+                onChange={(e) => setRawVideoUrl(e.target.value)}
+                placeholder="https://drive.google.com/..."
+              />
+            </div>
           </div>
-
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="flex items-center justify-between rounded-md border p-3">
               <div>
@@ -234,30 +255,6 @@ export const VideoForm = ({ onSuccess, socialNetworks }: VideoFormProps) => {
                 </p>
               </div>
               <Switch checked={isSponsored} onCheckedChange={setIsSponsored} />
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="cover">Capa (link do Drive)</Label>
-                <Input
-                  id="cover"
-                  type="url"
-                  value={coverImageUrl}
-                  onChange={(e) => setCoverImageUrl(e.target.value)}
-                  placeholder="https://drive.google.com/..."
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="raw">Vídeo bruto (link do Drive)</Label>
-                <Input
-                  id="raw"
-                  type="url"
-                  value={rawVideoUrl}
-                  onChange={(e) => setRawVideoUrl(e.target.value)}
-                  placeholder="https://drive.google.com/..."
-                />
-              </div>
             </div>
           </div>
 

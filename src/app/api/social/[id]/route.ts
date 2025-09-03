@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z, ZodError } from "zod";
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
@@ -12,7 +11,7 @@ const BodySchema = z.object({
 
 type Params = { params: { id: string } };
 
-export async function PATCH(req: Request, { params }: Params) {
+export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const json = await req.json();
     const data = BodySchema.parse(json);
@@ -49,7 +48,7 @@ export async function PATCH(req: Request, { params }: Params) {
   }
 }
 
-export async function DELETE(_req: Request, { params }: Params) {
+export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     await prisma.socialNetworks.delete({ where: { id: params.id } });
     return NextResponse.json({ ok: true });

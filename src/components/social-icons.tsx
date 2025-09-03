@@ -10,7 +10,8 @@ import {
     SiX,
     SiThreads,
     SiFacebook,
-    SiKuaishou, // Kwai
+    SiKuaishou,
+    SiSnapchat, // Kwai
 } from "react-icons/si"
 
 export const SOCIAL_ICON_MAP: Record<string, IconType> = {
@@ -22,6 +23,7 @@ export const SOCIAL_ICON_MAP: Record<string, IconType> = {
     Twitter: SiX,   // troque por SiX se quiser
     Threads: SiThreads,
     Facebook: SiFacebook,
+    Snapchat: SiSnapchat,
     Kwai: SiKuaishou,
     Video: FiVideo,       // fallback
 }
