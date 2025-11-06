@@ -1,65 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z, ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { handleErrorResponse } from "@/lib/api-error";
+import { SocialNetworkFormCreateSchema } from "@/schemas/social";
 
-const BodySchema = z.object({
-  name: z.string().min(2, "Informe um nome válido"),
-  url: z.string().url("Informe uma URL válida"),
-  icon: z.string().min(1, "Selecione um ícone"),
-});
-
-type Params = { params: { id: string } };
-
-export async function PATCH(req: NextRequest, { params }: Params) {
+export async function PUT(
+  req: NextRequest,
+  ctx: RouteContext<"/api/social/[id]">
+) {
   try {
+    const { id } = await ctx.params;
+
     const json = await req.json();
-    const data = BodySchema.parse(json);
+    const data = SocialNetworkFormCreateSchema.parse(json);
 
     const updated = await prisma.socialNetworks.update({
-      where: { id: params.id },
+      where: { id },
       data: { name: data.name, url: data.url, icon: data.icon },
     });
 
-    return NextResponse.json(updated);
-  } catch (err: unknown) {
-    if (err instanceof ZodError) {
-      return NextResponse.json(
-        { message: "Dados inválidos", issues: err.issues },
-        { status: 400 }
-      );
-    }
-    if (err instanceof PrismaClientKnownRequestError) {
-      if (err.code === "P2025") {
-        return NextResponse.json(
-          { message: "Registro não encontrado" },
-          { status: 404 }
-        );
-      }
-      if (err.code === "P2002") {
-        return NextResponse.json(
-          { message: "Nome/URL já em uso" },
-          { status: 409 }
-        );
-      }
-    }
-    console.error("[SOCIAL_NETWORKS][PATCH]", err);
-    return NextResponse.json({ message: "Erro ao atualizar" }, { status: 500 });
+    return NextResponse.json(updated, { status: 200 });
+  } catch (err) {
+    console.error("[SOCIAL_NETWORKS][PUT]", err);
+
+    return handleErrorResponse(err, "Erro ao atualizar a rede social.");
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(
+  _req: NextRequest,
+  ctx: RouteContext<"/api/social/[id]">
+) {
   try {
-    await prisma.socialNetworks.delete({ where: { id: params.id } });
-    return NextResponse.json({ ok: true });
-  } catch (err: unknown) {
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2025") {
-      return NextResponse.json(
-        { message: "Registro não encontrado" },
-        { status: 404 }
-      );
-    }
+    const { id } = await ctx.params;
+
+    await prisma.socialNetworks.delete({ where: { id } });
+
+    return Response.json(undefined, { status: 204 });
+  } catch (err) {
     console.error("[SOCIAL_NETWORKS][DELETE]", err);
-    return NextResponse.json({ message: "Erro ao remover" }, { status: 500 });
+
+    return handleErrorResponse(err, "Erro ao remover rede social.");
   }
 }

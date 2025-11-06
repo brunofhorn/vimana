@@ -1,32 +1,6 @@
-// social-icons.ts (util opcional)
-import type { IconType } from "react-icons"
-import { FiVideo } from "react-icons/fi"
-import {
-    SiInstagram,
-    SiTiktok,
-    SiPinterest,
-    SiYoutube,
-    SiLinkedin,
-    SiX,
-    SiThreads,
-    SiFacebook,
-    SiKuaishou,
-    SiSnapchat, // Kwai
-} from "react-icons/si"
-
-export const SOCIAL_ICON_MAP: Record<string, IconType> = {
-    Instagram: SiInstagram,
-    Tiktok: SiTiktok,
-    Pinterest: SiPinterest,
-    Youtube: SiYoutube,
-    Linkedin: SiLinkedin,
-    Twitter: SiX,   // troque por SiX se quiser
-    Threads: SiThreads,
-    Facebook: SiFacebook,
-    Snapchat: SiSnapchat,
-    Kwai: SiKuaishou,
-    Video: FiVideo,       // fallback
-}
+import { SOCIAL_ICON_MAP } from "@/interfaces/social-networks";
+import { IconType } from "react-icons";
+import { FiVideo } from "react-icons/fi";
 
 export const getBrandIcon = (name?: string): IconType =>
     (name && SOCIAL_ICON_MAP[name]) || FiVideo

@@ -1,12 +1,10 @@
-// components/videos/EditVideoLinksDialog.tsx
 "use client"
 
-import * as React from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format, parseISO } from "date-fns"
-import { FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi"
+import { FiPlus, FiTrash2 } from "react-icons/fi"
 
 import { Button } from "@/components/button"
 import { Input } from "@/components/input"
@@ -15,10 +13,15 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/select"
 import {
-    Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription, DialogTrigger,
+    Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription
 } from "@/components/dialog"
-import { DatePickerShadcn } from "@/components/date-picker"
-import type { SocialNetworkData } from "@/interfaces/social-networks"
+import { VideoEditDialogProps } from "@/interfaces/videos"
+import { useSocialNetworkContext } from "@/context/SocialNetworkContext"
+import { useLoadingsContext } from "@/context/LoadingsContext"
+import { useCallback, useEffect } from "react"
+import { InputDatePicker } from "@/components/input-date-picker"
+import { useVideoContext } from "@/context/VideoContext"
+import { toast } from "sonner"
 
 const RowSchema = z.object({
     id: z.string().optional(),
@@ -37,16 +40,10 @@ type LinkDTO = {
     social_network: { id: string; name: string; icon: string }
 }
 
-type Props = {
-    videoId: string
-    socialNetworks: SocialNetworkData[]
-    onSaved?: () => void
-    trigger?: React.ReactNode
-}
-
-export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger }: Props) {
-    const [open, setOpen] = React.useState(false)
-    const [loading, setLoading] = React.useState(false)
+export default function VideoEditDialog({ videoEditing, setVideoEditing }: VideoEditDialogProps) {
+    const { socialNetworks } = useSocialNetworkContext()
+    const { loadings, handleLoadings } = useLoadingsContext()
+    const { updateVideoSocial } = useVideoContext()
 
     const form = useForm<FormValues>({
         resolver: zodResolver(FormSchema),
@@ -54,10 +51,9 @@ export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger
     })
     const { fields, append, remove, replace } = useFieldArray({ control: form.control, name: "links" })
 
-    async function loadLinks() {
-        setLoading(true)
+    const loadLinks = useCallback(async () => {
         try {
-            const res = await fetch(`/api/video/${videoId}/social`, { cache: "no-store" })
+            const res = await fetch(`/api/video/${videoEditing?.id}/social`, { cache: "no-store" })
             if (!res.ok) throw new Error("Falha ao carregar links")
             const data = (await res.json()) as LinkDTO[]
             // transforma para o form (posted_at -> Date)
@@ -76,16 +72,23 @@ export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger
         } catch (e) {
             console.error(e)
         } finally {
-            setLoading(false)
         }
-    }
+    }, [append, replace, videoEditing?.id])
 
-    // carrega quando abre
-    React.useEffect(() => {
-        if (open) loadLinks()
-    }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        if (videoEditing) loadLinks()
+    }, [loadLinks, videoEditing])
 
     async function onSubmit(values: FormValues) {
+        handleLoadings({
+            key: "video_social_networks",
+            value: true
+        })
+
+        if (!videoEditing?.id) {
+            return;
+        }
+
         const payload = {
             links: values.links.map(l => ({
                 id: l.id,
@@ -93,34 +96,28 @@ export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger
                 url: l.url,
                 posted_at: format(l.posted_at, "yyyy-MM-dd"),
             })),
+        };
+
+        try {
+            await updateVideoSocial(videoEditing.id, payload);
+            
+            toast.success("Sucesso!", { description: "Redes sociais alteradas com sucesso." })
+
+            setVideoEditing(null);
+        } catch (e) {
+            const msg = e instanceof Error ? e.message : "Erro ao salvar";
+            toast.error("Error", { description: msg })
+        }finally{
+            handleLoadings({
+                key: "video_social_networks",
+                value: false
+            })
         }
-
-        const res = await fetch(`/api/video/${videoId}/social`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        })
-
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}))
-            alert(err?.message || "Erro ao salvar")
-            return
-        }
-
-        setOpen(false)
-        onSaved?.()
     }
 
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            {trigger ? (
-                <DialogTrigger asChild>{trigger}</DialogTrigger>
-            ) : (
-                <DialogTrigger asChild>
-                    <Button variant="outline" size="sm">Editar</Button>
-                </DialogTrigger>
-            )}
 
+    return (
+        <Dialog open={!!videoEditing} onOpenChange={(o) => !o && setVideoEditing(null)}>
             <DialogContent className="sm:max-w-5xl"> {/* <-- ficou bem maior */}
                 <DialogHeader>
                     <DialogTitle>Editar publicações do vídeo</DialogTitle>
@@ -129,7 +126,7 @@ export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger
                     </DialogDescription>
                 </DialogHeader>
 
-                {loading ? (
+                {loadings.video_editing ? (
                     <div className="p-6 text-sm text-muted-foreground">Carregando...</div>
                 ) : (
                     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -141,7 +138,6 @@ export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger
                                         key={f.id}
                                         className="grid grid-cols-1 items-end gap-4 md:grid-cols-12"
                                     >
-                                        {/* Rede */}
                                         <div className="md:col-span-3">
                                             <Label>Rede</Label>
                                             <Select
@@ -154,8 +150,8 @@ export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger
                                                     <SelectValue placeholder="Selecione" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {socialNetworks.map((sn) => (
-                                                        <SelectItem key={sn.id} value={sn.id??""}>
+                                                    {socialNetworks?.map((sn) => (
+                                                        <SelectItem key={sn.id} value={sn.id ?? ""}>
                                                             {sn.name}
                                                         </SelectItem>
                                                     ))}
@@ -163,7 +159,6 @@ export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger
                                             </Select>
                                         </div>
 
-                                        {/* URL */}
                                         <div className="md:col-span-6">
                                             <Label>URL</Label>
                                             <Input
@@ -175,19 +170,18 @@ export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger
                                             />
                                         </div>
 
-                                        {/* Data */}
                                         <div className="md:col-span-2">
                                             <Label>Postado em</Label>
-                                            <DatePickerShadcn
+                                            <InputDatePicker
                                                 value={form.watch(`links.${idx}.posted_at`) || null}
                                                 onChange={(d) =>
                                                     form.setValue(`links.${idx}.posted_at`, d ?? new Date(), { shouldValidate: true })
                                                 }
-                                                className="w-full min-w-[160px] tabular-nums"  // <- mais espaço e melhor leitura
+                                                isClearable={false}
+                                                className="w-full min-w-[160px] tabular-nums"
                                             />
                                         </div>
 
-                                        {/* Remover */}
                                         <div className="md:col-span-1 flex md:justify-end">
                                             <Button
                                                 type="button"
@@ -195,12 +189,11 @@ export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger
                                                 className="text-destructive"
                                                 title="Remover"
                                                 onClick={() => {
-                                                    // se já existe no banco, confirma; se for nova, remove direto
                                                     if (isPersisted) {
                                                         const ok = window.confirm("Remover esta publicação?")
                                                         if (!ok) return
                                                     }
-                                                    remove(idx) // <- sem chamada à API agora
+                                                    remove(idx)
                                                 }}
                                             >
                                                 <FiTrash2 className="h-4 w-4" />
@@ -224,7 +217,9 @@ export function EditVideoLinksDialog({ videoId, socialNetworks, onSaved, trigger
                             </Button>
 
                             <DialogFooter>
-                                <Button type="submit">Salvar alterações</Button>
+                                <Button type={loadings.video_social_networks ? 'button': 'submit'}>
+                                    {loadings.video_social_networks ? 'Salvando...' : 'Salvar alterações'}
+                                </Button>
                             </DialogFooter>
                         </div>
                     </form>

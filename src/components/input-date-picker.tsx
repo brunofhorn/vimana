@@ -39,7 +39,7 @@ const DPInput = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTM
 )
 DPInput.displayName = "DPInput"
 
-export function DatePickerShadcn({
+export function InputDatePicker({
   value,
   onChange,
   placeholder = "DD/MM/AAAA",
@@ -75,13 +75,11 @@ export function DatePickerShadcn({
       isClearable={isClearable}
       minDate={minDate}
       maxDate={maxDate}
-      // visual do popover
       popperClassName="z-50"
       showPopperArrow={false}
       popperPlacement="bottom-start"
       calendarContainer={Container}
       customInput={<DPInput className={className} />}
-      // header custom (mês/ano + setas)
       renderCustomHeader={({ date, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled }) => (
         <div className="mb-2 flex items-center justify-between px-1">
           <button
