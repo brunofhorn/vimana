@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 type Params = { params: { id: string } };
+
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
 
 function toDate(value: unknown): Date {
   if (value instanceof Date) return value;
@@ -31,11 +35,12 @@ const BodySchema = z.object({
 });
 
 /** Carrega as postagens do vídeo (com dados da rede) */
-export async function GET(_req: Request, { params }: Params) {
+export async function GET(_req: NextRequest, { params }: RouteContext) {
   try {
-    const videoId = params.id;
+    const { id } = await params;
+
     const links = await prisma.videoLink.findMany({
-      where: { video_id: videoId },
+      where: { video_id: id },
       include: { social_network: true },
       orderBy: { posted_at: "desc" },
     });
@@ -50,14 +55,14 @@ export async function GET(_req: Request, { params }: Params) {
 }
 
 /** Substitui o conjunto de links do vídeo por `links` (create/update/delete) */
-export async function PUT(req: Request, { params }: Params) {
+export async function PUT(_req: NextRequest, { params }: RouteContext) {
   try {
-    const videoId = params.id;
-    const json = await req.json();
+    const { id } = await params;
+    const json = await _req.json();
     const { links } = BodySchema.parse(json);
 
     // garante vídeo existente
-    const video = await prisma.video.findUnique({ where: { id: videoId } });
+    const video = await prisma.video.findUnique({ where: { id: id } });
     if (!video) {
       return NextResponse.json(
         { message: "Vídeo não encontrado" },
@@ -68,7 +73,7 @@ export async function PUT(req: Request, { params }: Params) {
     // transação: delete removidos + upsert/updates + creates
     const updated = await prisma.$transaction(async (tx) => {
       const existing = await tx.videoLink.findMany({
-        where: { video_id: videoId },
+        where: { video_id: id },
         select: { id: true, socialnetwork_id: true },
       });
 
@@ -84,7 +89,7 @@ export async function PUT(req: Request, { params }: Params) {
       // checar duplicidades (video, socialnetwork) no payload
       const seen = new Set<string>();
       for (const l of links) {
-        const key = `${videoId}::${l.socialnetwork_id}`;
+        const key = `${id}::${l.socialnetwork_id}`;
         if (seen.has(key)) {
           return Promise.reject(
             new Error("Redes duplicadas no formulário para o mesmo vídeo.")
@@ -99,7 +104,7 @@ export async function PUT(req: Request, { params }: Params) {
           // evitar colisão com outra linha do mesmo vídeo/rede
           const other = await tx.videoLink.findFirst({
             where: {
-              video_id: videoId,
+              video_id: id,
               socialnetwork_id: l.socialnetwork_id,
               id: { not: l.id },
             },
@@ -123,7 +128,7 @@ export async function PUT(req: Request, { params }: Params) {
           // criar nova (respeita @@unique(video_id, socialnetwork_id))
           await tx.videoLink.create({
             data: {
-              video_id: videoId,
+              video_id: id,
               socialnetwork_id: l.socialnetwork_id,
               url: l.url,
               posted_at: l.posted_at,
@@ -133,14 +138,14 @@ export async function PUT(req: Request, { params }: Params) {
       }
 
       const current = await tx.videoLink.findMany({
-        where: { video_id: videoId },
+        where: { video_id: id },
         include: { social_network: true },
         orderBy: { posted_at: "desc" },
       });
       return current;
     });
 
-    return NextResponse.json({ videoId, links: updated });
+    return NextResponse.json({ id, links: updated });
   } catch (err: any) {
     console.error("[VIDEO_LINKS][PUT]", err);
 
