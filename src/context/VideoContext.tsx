@@ -1,8 +1,8 @@
 "use client"
 
-import { createContext, FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, FC, PropsWithChildren, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { IVideo, VideoFilters, VideoSocialPutPayload } from "@/interfaces/videos";
-import { createVideo, getVideos, putVideoSocial } from "@/services/video";
+import { createVideo, deleteVideo, getVideos, putVideoSocial } from "@/services/video";
 import { normalizeText } from "@/utils/normalize-text";
 import { searchableText } from "@/utils/searchable-text";
 import { verifySameDay } from "@/utils/verify-same-day";
@@ -41,6 +41,8 @@ export const VideoContext = createContext<VideoContextProps>(
 export const VideoContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const [videos, setVideos] = useState<IVideo[] | null>(null)
     const [filters, setFilters] = useState<VideoFilters>(initialFilters);
+    const backupRef = useRef<IVideo[] | null>(null);
+
 
     const fetchVideos = useCallback(async () => {
         const videosResponse = await getVideos()
@@ -48,9 +50,19 @@ export const VideoContextProvider: FC<PropsWithChildren> = ({ children }) => {
         setVideos(videosResponse)
     }, [])
 
-    const removeVideo = async (id: string) => {
-        console.log(id)
-    }
+    const removeVideo = useCallback(async (id: string) => {
+        setVideos(prev => {
+            backupRef.current = prev ?? [];
+            return (prev ?? []).filter(l => l.id !== id);
+        });
+
+        try {
+            await deleteVideo(id)
+        } catch (e) {
+            setVideos(backupRef.current ?? []);
+            throw e;
+        }
+    }, []);
 
     const patchFilters = useCallback((partial: Partial<VideoFilters>) => {
         setFilters(prev => ({ ...prev, ...partial }));

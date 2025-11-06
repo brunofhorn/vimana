@@ -62,6 +62,24 @@ export async function putVideoSocial(
   return data;
 }
 
+export async function deleteVideo(videoId: string){
+  const res = await fetch(`/api/video/${videoId}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!res.ok) {
+    let message = "Falha ao remover o vídeo";
+    try {
+      const err = (await res.json()) as { message?: string };
+      if (typeof err?.message === "string") message = err.message;
+    } catch {}
+    throw new Error(message);
+  }
+
+  return res;
+}
+
 // export async function postSocialNetwork(
 //   social: SocialNetworksFormCreateValues
 // ) {
