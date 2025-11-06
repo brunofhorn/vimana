@@ -14,6 +14,7 @@ import { CiEraser } from 'react-icons/ci'
 import VideoSocialNetwork from "./VideoSocialNetwork";
 import { useSocialNetworkContext } from "@/context/SocialNetworkContext";
 import { useVideoContext } from "@/context/VideoContext";
+import { toast } from "sonner";
 
 export default function VideoForm() {
     const { socialNetworks } = useSocialNetworkContext()
@@ -59,12 +60,15 @@ export default function VideoForm() {
         try {
             await addNewVideo(data)
             reset()
+
+            toast.success("Sucesso!", { description: "O vídeo foi adicionado com sucesso." })
         } catch (e: unknown) {
-            let message = "Erro ao criar vídeo"
+            let message = "Erro ao adicionar o vídeo."
             if (e instanceof Error) {
                 message = e.message
             }
-            window.alert(message)
+
+            toast.error("Error!", { description: message })
         }
     }
 
