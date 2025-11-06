@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
 import {
-  JsonArray,
   PrismaClientKnownRequestError,
 } from "@prisma/client/runtime/library";
 import { handleErrorResponse } from "@/lib/api-error";

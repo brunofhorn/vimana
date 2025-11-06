@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
-import { IVideo, VideoFilters, VideoSocialLinkDTO, VideoSocialPutPayload } from "@/interfaces/videos";
+import { IVideo, VideoFilters, VideoSocialPutPayload } from "@/interfaces/videos";
 import { createVideo, getVideos, putVideoSocial } from "@/services/video";
 import { normalizeText } from "@/utils/normalize-text";
 import { searchableText } from "@/utils/searchable-text";

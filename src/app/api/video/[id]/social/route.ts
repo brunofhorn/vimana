@@ -5,8 +5,6 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-type Params = { params: { id: string } };
-
 type RouteContext = {
   params: Promise<{ id: string }>;
 };

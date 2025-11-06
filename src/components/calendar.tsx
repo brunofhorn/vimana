@@ -4,7 +4,6 @@
 import * as React from "react"
 import {
   DayPicker,
-  type DayPickerProps,
   type NavProps,
 } from "react-day-picker"
 import "react-day-picker/dist/style.css" // PRECISA para o layout em grid

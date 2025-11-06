@@ -54,21 +54,6 @@ const SOCIAL_ITEMS: IconSelectItem[] = [
   { label: "Vídeo",     value: "Video",     Icon: FiVideo },
 ] as const
 
-// Mapa de valor -> componente do ícone
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  Instagram: SiInstagram,
-  Tiktok: SiTiktok,       // value "Tiktok" (label "TikTok")
-  Pinterest: SiPinterest,
-  Youtube: SiYoutube,     // value "Youtube" (label "YouTube")
-  Linkedin: SiLinkedin,
-  Twitter: SiX,     // se preferir X, pode trocar por SiX (se existir na sua versão)
-  Threads: SiThreads,
-  Facebook: SiFacebook,
-  Snapchat: SiSnapchat,
-  Kwai: SiKuaishou,       // Kwai = Kuaishou
-  Video: FiVideo,         // fallback genérico de vídeo
-}
-
 export function IconSelect({
   selectedIcon,
   onIconSelect,
