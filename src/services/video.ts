@@ -1,6 +1,5 @@
 import {
   IVideo,
-  VideoSocialLinkDTO,
   VideoSocialPutPayload,
   VideoSocialPutResponse,
 } from "@/interfaces/videos";
@@ -39,18 +38,6 @@ export async function createVideo(
 
   return data;
 }
-
-type ILinks = {
-  id: string;
-  url: string;
-  name: string;
-  icon: string;
-  created_at: Date;
-  updated_at: Date;
-  socialnetwork_id: string;
-  posted_at: Date;
-  video_id: string;
-};
 
 export async function putVideoSocial(
   videoId: string,
