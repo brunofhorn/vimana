@@ -25,7 +25,7 @@ export default function Videos() {
         <div>
             <TitlePage title={"Adicionar Novo Vídeo"} />
 
-            <Card>
+            <Card className="bg-white/5 border-white/5">
                 <CardContent className="mt-6">
                     <VideoForm />
                 </CardContent>

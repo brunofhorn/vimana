@@ -75,7 +75,7 @@ export default function VideoForm() {
     return (
         <FormProvider {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div>
+                <div className="flex flex-col gap-3">
                     <Label htmlFor="title">Título</Label>
                     <Input
                         id="title"
@@ -86,7 +86,7 @@ export default function VideoForm() {
                         <span className="text-xs text-red-600">{errors.title.message}</span>
                     )}
                 </div>
-                <div>
+                <div className="flex flex-col gap-3">
                     <Label htmlFor="description">Descrição</Label>
                     <Textarea
                         id="description"
@@ -99,7 +99,7 @@ export default function VideoForm() {
                     )}
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <div>
+                    <div className="flex flex-col gap-3">
                         <Label>Tags</Label>
                         <Controller
                             name="tags"

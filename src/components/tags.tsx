@@ -2,22 +2,15 @@
 
 import * as React from "react";
 import { FiX } from "react-icons/fi";
-import { cn } from "@/lib/utils"; // se quiser estilizar como seu Input
+import { cn } from "@/lib/utils"; 
 
 type BaseProps = {
-    /** Estado controlado (opcional). Se não passar, o componente gerencia internamente. */
     value?: string[];
-    /** Callback quando as tags mudarem (opcional). */
     onChange?: (next: string[]) => void;
     placeholder?: string;
-    /** Conteúdo extra de classe para o container */
     className?: string;
 };
 
-/**
- * Props que o RHF injeta via {...register("tags")}, e que repassamos ao input hidden.
- * Removemos 'value' e 'onChange' (string) do HTMLInput porque aqui trabalhamos com string[].
- */
 type RHFBridgeProps = Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
     "value" | "onChange" | "type"
@@ -124,7 +117,7 @@ export const Tags = React.forwardRef<HTMLInputElement, RHFBridgeProps>(
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={onKeyDown}
                         placeholder={placeholder}
-                        className="min-w-[160px] flex-1 bg-transparent p-1 text-sm outline-none"
+                        className="min-w-[160px] text-gray-50 flex-1 border border-gray-700 dark:border-gray-800 bg-white/5 p-1 text-sm ring-offset-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     />
                 </div>
             </div>
