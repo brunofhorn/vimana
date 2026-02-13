@@ -7,7 +7,7 @@ import { LoadingsContextProvider } from "@/context/LoadingsContext";
 import { SocialNetworkContextProvider } from "@/context/SocialNetworkContext";
 import { VideoContextProvider } from "@/context/VideoContext";
 import { Toaster } from "@/components/ui/sonner";
-import { Sidebar } from "@/components/Sidebar";
+import { Sidebar } from "@/components/sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,10 +34,8 @@ export default function RootLayout({
             <VideoContextProvider>
               <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
                 <div className="flex flex-row min-h-screen">
-                  {/* Menu lateral colapsável */}
                   <Sidebar />
 
-                  {/* Conteúdo principal */}
                   <main className="flex-1 p-6 lg:p-10">
                     <div className="mx-auto">{children}</div>
                   </main>

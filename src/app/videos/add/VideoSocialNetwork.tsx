@@ -36,7 +36,6 @@ export default function VideoSocialNetwork({ index, socialNetworks, onRemove }: 
 
   return (
     <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-3">
-      {/* Rede */}
       <div className="flex flex-col gap-2">
         <Label>Rede</Label>
         <Controller
@@ -44,15 +43,17 @@ export default function VideoSocialNetwork({ index, socialNetworks, onRemove }: 
           control={control}
           render={({ field }) => (
             <Select
-              value={field.value || undefined} // evita string vazia para Radix
+              value={field.value || undefined}
               onValueChange={(v) => field.onChange(v)}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione a rede" />
+              <SelectTrigger
+                className="w-full placeholder:text-white text-white"
+              >
+                <SelectValue placeholder="Selecione a rede" className="w-full placeholder:text-white text-white" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white text-slate-900 border-slate-200">
                 {socialNetworks.map((sn) => (
-                  <SelectItem key={sn.id} value={sn.id}>
+                  <SelectItem key={sn.id} value={sn.id} className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">
                     {sn.name}
                   </SelectItem>
                 ))}
@@ -67,7 +68,6 @@ export default function VideoSocialNetwork({ index, socialNetworks, onRemove }: 
         )}
       </div>
 
-      {/* URL */}
       <div className="flex flex-col gap-2">
         <Label>URL do vídeo</Label>
         <Input
@@ -81,7 +81,6 @@ export default function VideoSocialNetwork({ index, socialNetworks, onRemove }: 
         )}
       </div>
 
-      {/* Data + Remover */}
       <div className="flex items-end gap-2">
         <div className="flex flex-1 flex-col gap-2">
           <Label>Data de postagem</Label>
@@ -90,9 +89,9 @@ export default function VideoSocialNetwork({ index, socialNetworks, onRemove }: 
             control={control}
             render={({ field }) => (
               <InputDatePicker
-                value={field.value as Date || null}
-                onChange={(d) => field.onChange(d ?? new Date())}
-                className="w-full min-w-[160px] tabular-nums"
+                value={(field.value as Date) || null}
+                onChange={(d) => field.onChange(d)}
+                className="w-full min-w-40 tabular-nums"
                 isClearable={false}
               />
             )}

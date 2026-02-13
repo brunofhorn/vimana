@@ -78,7 +78,7 @@ export const Tags = React.forwardRef<HTMLInputElement, RHFBridgeProps>(
         const serialized = React.useMemo(() => JSON.stringify(tags), [tags]);
 
         return (
-            <div className={cn("rounded-md border p-2", className)}>
+            <div className={cn("rounded-md border border-white/5 h-10", className)}>
                 {/* input hidden que o RHF registra */}
                 <input
                     type="hidden"

@@ -46,7 +46,7 @@ export default function VideoDeleteDialog({ videoDeleting, setVideoDeleting }: V
         <AlertDialog open={!!videoDeleting} onOpenChange={(o) => !o && setVideoDeleting(null)}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Excluir “{videoDeleting?.title}”?</AlertDialogTitle>
+                    <AlertDialogTitle className="text-slate-700">Excluir “{videoDeleting?.title}”?</AlertDialogTitle>
                     <AlertDialogDescription>
                         Esta ação não pode ser desfeita. O vídeo será removido permanentemente.
                     </AlertDialogDescription>

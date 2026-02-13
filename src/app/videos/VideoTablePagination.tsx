@@ -54,10 +54,10 @@ export default function VideoTablePagination() {
             </span>
 
             <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => goTo(1)} disabled={!canPrev} aria-label="Primeira">
+                <Button variant="secondary" size="sm" onClick={() => goTo(1)} disabled={!canPrev} aria-label="Primeira">
                     <FiChevronsLeft />
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => goTo(filters.page - 1)} disabled={!canPrev} aria-label="Anterior">
+                <Button variant="secondary" size="sm" onClick={() => goTo(filters.page - 1)} disabled={!canPrev} aria-label="Anterior">
                     <FiChevronLeft />
                 </Button>
                 {filters.pageSize !== "ALL" &&
@@ -78,10 +78,10 @@ export default function VideoTablePagination() {
                             </Button>
                         )
                     )}
-                <Button variant="outline" size="sm" onClick={() => goTo(filters.page + 1)} disabled={!canNext} aria-label="Próxima">
+                <Button variant="secondary" size="sm" onClick={() => goTo(filters.page + 1)} disabled={!canNext} aria-label="Próxima">
                     <FiChevronRight />
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => goTo(totalPages)} disabled={!canNext} aria-label="Última">
+                <Button variant="secondary" size="sm" onClick={() => goTo(totalPages)} disabled={!canNext} aria-label="Última">
                     <FiChevronsRight />
                 </Button>
             </div>

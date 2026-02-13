@@ -4,7 +4,7 @@ import { Button } from "@/components/button"
 import { IconSelect } from "@/components/icon-selector"
 import { Input } from "@/components/input"
 import { InputDatePicker } from "@/components/input-date-picker"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/select"
 import { getBrandIcon } from "@/components/social-icons"
 import { useSocialNetworkContext } from "@/context/SocialNetworkContext"
 import { useVideoContext } from "@/context/VideoContext"
@@ -28,10 +28,10 @@ export default function VideoTableFilter() {
     }, [filters.social, setValue]);
 
     const socialItems = [
-        { label: "Todas", value: "ALL" }, // sentinela não-vazia
+        { label: "Todas", value: "ALL" },
         ...(socialNetworks ?? []).map((sn) => ({
             label: sn.name || "(sem nome)",
-            value: sn.id,                         // usamos ID aqui
+            value: sn.id,
             Icon: getBrandIcon(sn.icon),
         })),
     ];
@@ -50,7 +50,7 @@ export default function VideoTableFilter() {
                 control={control}
                 render={({ field }) => (
                     <IconSelect
-                        className="w-1/6"
+                        className="w-1/6 placeholder:text-white text-white"
                         items={socialItems}
                         selectedIcon={field.value === "" ? "ALL" : field.value}
                         onIconSelect={(v) => {
@@ -64,7 +64,7 @@ export default function VideoTableFilter() {
             />
 
             <div className="relative w-[200px]">
-                <InputDatePicker value={filters.postedDate} onChange={(d) => patchFilters({ postedDate: d, page: 1 })} className="w-[200px]" />
+                <InputDatePicker value={filters.postedDate} onChange={(d) => patchFilters({ postedDate: d, page: 1 })} className="w-50" />
                 {filters.postedDate && (
                     <Button
                         type="button"
@@ -83,13 +83,16 @@ export default function VideoTableFilter() {
                 value={filters.publi === "" ? "ALL" : filters.publi}
                 onValueChange={(v) => patchFilters({ publi: v === "ALL" ? "" : (v as "S" | "N"), page: 1 })}
             >
-                <SelectTrigger className="w-1/6">
+                <SelectTrigger className="w-1/6 placeholder:text-white text-white">
                     <SelectValue placeholder="Publi" />
                 </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="ALL">Todos</SelectItem>
-                    <SelectItem value="S">Sim</SelectItem>
-                    <SelectItem value="N">Não</SelectItem>
+                <SelectContent className="max-h-80 p-0 bg-white text-slate-900 border-slate-200">
+                    <SelectGroup>
+                        <SelectLabel>É uma publi?</SelectLabel>
+                        <SelectItem value="ALL" className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">Todos</SelectItem>
+                        <SelectItem value="S" className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">Sim</SelectItem>
+                        <SelectItem value="N" className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">Não</SelectItem>
+                    </SelectGroup>
                 </SelectContent>
             </Select>
 
@@ -97,20 +100,23 @@ export default function VideoTableFilter() {
                 value={filters.repost === "" ? "ALL" : filters.repost}
                 onValueChange={(v) => patchFilters({ repost: v === "ALL" ? "" : (v as "S" | "N"), page: 1 })}
             >
-                <SelectTrigger className="w-1/6">
+                <SelectTrigger className="w-1/6 placeholder:text-white text-white">
                     <SelectValue placeholder="Repost" />
                 </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="ALL">Todos</SelectItem>
-                    <SelectItem value="S">Sim</SelectItem>
-                    <SelectItem value="N">Não</SelectItem>
+                <SelectContent className="max-h-80 p-0 bg-white text-slate-900 border-slate-200">
+                    <SelectGroup>
+                        <SelectLabel>É um repost?</SelectLabel>
+                        <SelectItem value="ALL" className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">Todos</SelectItem>
+                        <SelectItem value="S" className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">Sim</SelectItem>
+                        <SelectItem value="N" className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">Não</SelectItem>
+                    </SelectGroup>
                 </SelectContent>
             </Select>
 
             <Button
                 type="button"
                 className="w-1/6"
-                variant="outline"
+                variant="secondary"
                 onClick={() => clearFilters()}
             >
                 Limpar filtros

@@ -90,9 +90,7 @@ export function IconSelect({
           <SelectValue placeholder={placeholder} />
         )}
       </SelectTrigger>
-
-      <SelectContent className="max-h-80 p-0">
-        {/* Busca */}
+      <SelectContent className="max-h-80 p-0 bg-white text-slate-900 border-slate-200">
         <div className="border-b p-2">
           <Input
             placeholder="Buscar ícone..."
@@ -107,7 +105,7 @@ export function IconSelect({
           {filtered.map((item) => {
             const Ico = item.Icon ?? FiVideo;
             return (
-              <SelectItem key={`${item.value}`} value={item.value}>
+              <SelectItem key={`${item.value}`} value={item.value} className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">
                 <div className="flex items-center gap-2">
                   <Ico className="h-4 w-4" />
                   <span className="truncate">{item.label}</span>

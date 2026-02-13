@@ -15,6 +15,7 @@ import VideoSocialNetwork from "./VideoSocialNetwork";
 import { useSocialNetworkContext } from "@/context/SocialNetworkContext";
 import { useVideoContext } from "@/context/VideoContext";
 import { toast } from "sonner";
+import { TagsInput } from "@/components/taginput";
 
 export default function VideoForm() {
     const { socialNetworks } = useSocialNetworkContext()
@@ -99,26 +100,27 @@ export default function VideoForm() {
                     )}
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <div className="flex flex-col gap-3">
-                        <Label>Tags</Label>
+                    <div>
+                        <Label htmlFor="tags">Tags</Label>
                         <Controller
                             name="tags"
                             control={control}
                             render={({ field }) => {
-                                const valueAsArray = Array.isArray(field.value) ? field.value : [];
+                                const valueAsArray = Array.isArray(field.value) ? field.value : []
+
                                 return (
-                                    <Tags
+                                    <TagsInput
                                         id="tags"
+                                        name="tags"              
                                         value={valueAsArray}
-                                        onChange={(next) => field.onChange(next)}
+                                        onValueChange={field.onChange}
+                                        onBlur={field.onBlur}    
+                                        ref={field.ref}          
                                         placeholder="Digite as tags"
                                     />
-                                );
+                                )
                             }}
                         />
-                        {errors.tags && (
-                            <span className="text-xs text-red-600">{errors.tags.message}</span>
-                        )}
                     </div>
                     <div>
                         <Label htmlFor="cover">Capa (link do Drive)</Label>
@@ -146,7 +148,7 @@ export default function VideoForm() {
                     </div>
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div className="flex items-center justify-between rounded-md border p-3">
+                    <div className="flex items-center justify-between rounded-md border border-white/5 p-3">
                         <div>
                             <Label className="text-sm font-medium">É repostagem?</Label>
                             <p className="text-xs text-muted-foreground">
@@ -161,7 +163,7 @@ export default function VideoForm() {
                                 <Switch
                                     id="is_repost"
                                     checked={!!value}
-                                    onCheckedChange={onChange} 
+                                    onCheckedChange={onChange}
                                     onBlur={onBlur}
                                 />
                             )}
@@ -171,7 +173,7 @@ export default function VideoForm() {
                         )}
                     </div>
 
-                    <div className="flex items-center justify-between rounded-md border p-3">
+                    <div className="flex items-center justify-between rounded-md border border-white/5 p-3">
                         <div>
                             <Label className="text-sm font-medium">É publi?</Label>
                             <p className="text-xs text-muted-foreground">
@@ -186,7 +188,7 @@ export default function VideoForm() {
                                 <Switch
                                     id="is_sponsored"
                                     checked={!!value}
-                                    onCheckedChange={onChange} 
+                                    onCheckedChange={onChange}
                                     onBlur={onBlur}
                                 />
                             )}
@@ -219,7 +221,7 @@ export default function VideoForm() {
                     )}
                 </div>
                 <div className="flex gap-2">
-                    <Button type="submit" disabled={isSubmitting}>
+                    <Button type="submit" variant="secondary" className="bg-green-600 text-white hover:bg-green-300 hover:text-green-900" disabled={isSubmitting}>
                         <FiCheck />
                         {isSubmitting ? "Criando..." : "Criar"}
                     </Button>

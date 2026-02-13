@@ -55,15 +55,15 @@ export default function VideoTable() {
         <div className="overflow-x-auto rounded-md border">
             <TooltipProvider delayDuration={0}>
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="bg-white text-slate-600">
                         <TableRow>
-                            <TableHead className="w-[160px]">Vídeo</TableHead>
-                            <TableHead className="w-[500px]">Título</TableHead>
+                            <TableHead className="w-40">Vídeo</TableHead>
+                            <TableHead className="w-96">Título</TableHead>
                             <TableHead>Redes sociais</TableHead>
-                            <TableHead>Publi</TableHead>
-                            <TableHead>Repost</TableHead>
+                            <TableHead className="text-center">Publi</TableHead>
+                            <TableHead className="text-center">Repost</TableHead>
                             <TableHead>Tags</TableHead>
-                            <TableHead className="w-[80px] text-right">Excluir</TableHead>
+                            <TableHead className="w-20 text-center">Excluir</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -111,7 +111,7 @@ export default function VideoTable() {
                                 const repost = is_repost ? "S" : "N"
 
                                 return (
-                                    <TableRow key={id}>
+                                    <TableRow key={id} className="hover:bg-slate-900">
                                         <TableCell>
                                             <div className="flex items-center gap-3">
                                                 <button
@@ -135,7 +135,7 @@ export default function VideoTable() {
                                                         href={raw_video_url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                                                        className="inline-flex items-center gap-1 text-sm text-white hover:underline "
                                                         title="Abrir arquivo bruto no Drive"
                                                     >
                                                         <FiFile className="h-4 w-4" />
@@ -185,10 +185,14 @@ export default function VideoTable() {
                                         </TableCell>
 
                                         <TableCell>
-                                            {publi === "S" ? <FiCheck size={20} color={"green"} /> : <FiX size={20} color={"red"} />}
+                                            <div className="flex justify-center">
+                                                {publi === "S" ? <FiCheck size={20} color={"green"} /> : <FiX size={20} color={"red"} />}
+                                            </div>
                                         </TableCell>
                                         <TableCell>
-                                            {repost === "S" ? <FiCheck size={20} color={"green"} /> : <FiX size={20} color={"red"} />}
+                                            <div className="flex justify-center">
+                                                {repost === "S" ? <FiCheck size={20} color={"green"} /> : <FiX size={20} color={"red"} />}
+                                            </div>
                                         </TableCell>
 
                                         <TableCell>
@@ -204,7 +208,7 @@ export default function VideoTable() {
                                                     {hiddenTags.length > 0 && (
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
-                                                                <Badge variant="outline">+{hiddenTags.length}</Badge>
+                                                                <Badge variant="secondary">+{hiddenTags.length}</Badge>
                                                             </TooltipTrigger>
                                                             <TooltipContent>{hiddenTags.join(", ")}</TooltipContent>
                                                         </Tooltip>
@@ -221,7 +225,7 @@ export default function VideoTable() {
                                                 className="h-8 w-8"
                                                 title="Editar publicações"
                                                 aria-label="Editar publicações"
-                                                onClick={()=> setVideoEditing(video)}
+                                                onClick={() => setVideoEditing(video)}
                                             >
                                                 <FiEdit2 className="h-4 w-4" />
                                             </Button>

@@ -10,14 +10,14 @@ export default function VideoTablePageSize(){
     return (
         <div className="my-4">
             <Select value={String(filters.pageSize)} onValueChange={(value) => patchFilters({ pageSize: value as PageSize, page: 1 })}>
-              <SelectTrigger className="w-[120px]">
+              <SelectTrigger className="w-30">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-80 p-0 bg-white text-slate-900 border-slate-200">
                 {[10, 20, 50, 100].map((n) => (
-                    <SelectItem value={String(n)} key={n}>{n}</SelectItem>
+                    <SelectItem value={String(n)} key={n}  className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">{n}</SelectItem>
                 ))}
-                <SelectItem value="ALL">Todos</SelectItem>
+                <SelectItem value="ALL" className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">Todos</SelectItem>
               </SelectContent>
             </Select>
         </div>

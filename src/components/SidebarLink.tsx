@@ -9,7 +9,7 @@ type SidebarLinkProps = {
 
 export function SidebarLink({ item, collapsed, isActive }: SidebarLinkProps) {
     const baseClasses =
-        "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold leading-normal transition-colors duration-200";
+        "flex items-center gap-3 rounded-md px-4 py-3 text-sm font-semibold leading-normal transition-colors duration-200";
 
     const activeClasses = "bg-[#00348C] text-[#E0E9FF]";
     const inactiveClasses = "text-gray-300 hover:bg-white/5";
