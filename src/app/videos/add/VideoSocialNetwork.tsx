@@ -4,14 +4,13 @@ import * as React from "react"
 import { Button } from "@/components/button"
 import { Input } from "@/components/input"
 import { Label } from "@/components/label"
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/select"
 import { FiTrash2 } from "react-icons/fi"
 import { ISocialNetwork } from "@/interfaces/social-networks"
 import { InputDatePicker } from "@/components/input-date-picker"
 import { VideoFormCreateInput } from "@/schemas/video"
 import { Controller, useFormContext } from "react-hook-form"
+import { IconSelect } from "@/components/icon-selector"
+import { getBrandIcon } from "@/components/social-icons"
 
 export interface SocialLink {
   socialNetworkId: string
@@ -34,6 +33,12 @@ export default function VideoSocialNetwork({ index, socialNetworks, onRemove }: 
 
   const base = `links.${index}` as const;
 
+  const socialItems = socialNetworks.map((sn) => ({
+    label: sn.name || "(sem nome)",
+    value: sn.id,
+    Icon: getBrandIcon(sn.icon),
+  }));
+
   return (
     <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-3">
       <div className="flex flex-col gap-2">
@@ -42,23 +47,15 @@ export default function VideoSocialNetwork({ index, socialNetworks, onRemove }: 
           name={`${base}.socialnetwork_id`}
           control={control}
           render={({ field }) => (
-            <Select
-              value={field.value || undefined}
-              onValueChange={(v) => field.onChange(v)}
-            >
-              <SelectTrigger
-                className="w-full placeholder:text-white text-white"
-              >
-                <SelectValue placeholder="Selecione a rede" className="w-full placeholder:text-white text-white" />
-              </SelectTrigger>
-              <SelectContent className="bg-white text-slate-900 border-slate-200">
-                {socialNetworks.map((sn) => (
-                  <SelectItem key={sn.id} value={sn.id} className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">
-                    {sn.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <IconSelect
+              selectedIcon={field.value || ""}
+              onIconSelect={field.onChange}
+              items={socialItems}
+              placeholder="Selecione a rede"
+              searchPlaceholder="Buscar rede social..."
+              groupLabel="Redes sociais"
+              className="w-full placeholder:text-white text-white"
+            />
           )}
         />
         {errors.links?.[index]?.socialnetwork_id && (
@@ -69,11 +66,8 @@ export default function VideoSocialNetwork({ index, socialNetworks, onRemove }: 
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label>URL do vídeo</Label>
-        <Input
-          placeholder="https://..."
-          {...register(`${base}.url`)}
-        />
+        <Label>URL do video</Label>
+        <Input placeholder="https://..." {...register(`${base}.url`)} />
         {errors.links?.[index]?.url && (
           <span className="text-xs text-red-600">
             {errors.links[index]?.url?.message as string}

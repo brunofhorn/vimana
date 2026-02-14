@@ -8,15 +8,17 @@ export default function Social() {
         <div>
             <TitlePage title={"Redes Sociais"} />
 
-            <Card>
+            <Card className="bg-white/5 border-white/5">
                 <CardContent className="mt-6">
                     <SocialNetworkForm />
                 </CardContent>
             </Card>
 
-            <div className="mt-6">
-                <SocialNetworkTable />
-            </div>
+            <Card className="mt-6 bg-white/5 border-white/5">
+                <CardContent className="mt-6">
+                    <SocialNetworkTable />
+                </CardContent>
+            </Card>
         </div>
     )
 }

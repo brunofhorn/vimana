@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/select"
 
-// Importa os ícones de marcas (Simple Icons) e um fallback de "vídeo"
 import {
   SiInstagram,
   SiTiktok,
@@ -23,60 +22,67 @@ import {
   SiThreads,
   SiFacebook,
   SiKuaishou,
-  SiSnapchat, // Kwai
+  SiSnapchat,
 } from "react-icons/si"
 import { FiVideo } from "react-icons/fi"
 
 type IconC = React.ComponentType<{ className?: string }>;
 
-interface IconSelectItem { label: string; value: string; Icon?: IconC; }
-
-interface IconSelectProps {
-  selectedIcon: string
-  onIconSelect: (iconName: string) => void
-  placeholder?: string
-  className?: string
-  items?: IconSelectItem[]; 
+interface IconSelectItem {
+  label: string;
+  value: string;
+  Icon?: IconC;
 }
 
-// Mantém os valores que você já usava (note o value "Tiktok"/"Youtube")
+interface IconSelectProps {
+  selectedIcon: string;
+  onIconSelect: (iconName: string) => void;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  groupLabel?: string;
+  className?: string;
+  items?: IconSelectItem[];
+}
+
 const SOCIAL_ITEMS: IconSelectItem[] = [
   { label: "Instagram", value: "Instagram", Icon: SiInstagram },
-  { label: "TikTok",    value: "Tiktok",    Icon: SiTiktok },
+  { label: "TikTok", value: "Tiktok", Icon: SiTiktok },
   { label: "Pinterest", value: "Pinterest", Icon: SiPinterest },
-  { label: "YouTube",   value: "Youtube",   Icon: SiYoutube },
-  { label: "LinkedIn",  value: "Linkedin",  Icon: SiLinkedin },
-  { label: "Twitter/X", value: "Twitter",   Icon: SiX },
-  { label: "Threads",   value: "Threads",   Icon: SiThreads },
-  { label: "Facebook",  value: "Facebook",  Icon: SiFacebook },
-  { label: "Snapchat",  value: "Snapchat",  Icon: SiSnapchat },
-  { label: "Kwai",      value: "Kwai",      Icon: SiKuaishou },
-  { label: "Vídeo",     value: "Video",     Icon: FiVideo },
+  { label: "YouTube", value: "Youtube", Icon: SiYoutube },
+  { label: "LinkedIn", value: "Linkedin", Icon: SiLinkedin },
+  { label: "Twitter/X", value: "Twitter", Icon: SiX },
+  { label: "Threads", value: "Threads", Icon: SiThreads },
+  { label: "Facebook", value: "Facebook", Icon: SiFacebook },
+  { label: "Snapchat", value: "Snapchat", Icon: SiSnapchat },
+  { label: "Kwai", value: "Kwai", Icon: SiKuaishou },
+  { label: "Video", value: "Video", Icon: FiVideo },
 ] as const
 
 export function IconSelect({
   selectedIcon,
   onIconSelect,
-  placeholder = "Selecione o ícone",
+  placeholder = "Selecione o icone",
+  searchPlaceholder = "Buscar...",
+  groupLabel = "Opcoes",
   className,
-  items, 
+  items,
 }: IconSelectProps) {
   const [query, setQuery] = React.useState("")
-  const list = items ?? SOCIAL_ITEMS;
+  const list = items ?? SOCIAL_ITEMS
 
   const filtered = React.useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return list;
-    return list.filter((i) =>
-      i.label.toLowerCase().includes(q) || i.value.toLowerCase().includes(q)
-    );
-  }, [query, list]);
+    const q = query.trim().toLowerCase()
+    if (!q) return list
+    return list.filter(
+      (i) => i.label.toLowerCase().includes(q) || i.value.toLowerCase().includes(q)
+    )
+  }, [query, list])
 
   const current = React.useMemo(
     () => list.find((i) => i.value === selectedIcon),
     [list, selectedIcon]
-  );
-  const CurrentIcon = current?.Icon;
+  )
+  const CurrentIcon = current?.Icon
 
   return (
     <Select value={selectedIcon || undefined} onValueChange={onIconSelect}>
@@ -93,7 +99,7 @@ export function IconSelect({
       <SelectContent className="max-h-80 p-0 bg-white text-slate-900 border-slate-200">
         <div className="border-b p-2">
           <Input
-            placeholder="Buscar ícone..."
+            placeholder={searchPlaceholder}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="h-8"
@@ -101,11 +107,15 @@ export function IconSelect({
         </div>
 
         <SelectGroup>
-          <SelectLabel>Redes sociais</SelectLabel>
+          <SelectLabel>{groupLabel}</SelectLabel>
           {filtered.map((item) => {
-            const Ico = item.Icon ?? FiVideo;
+            const Ico = item.Icon ?? FiVideo
             return (
-              <SelectItem key={`${item.value}`} value={item.value} className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">
+              <SelectItem
+                key={item.value}
+                value={item.value}
+                className="text-slate-900 focus:bg-slate-100 focus:text-slate-900"
+              >
                 <div className="flex items-center gap-2">
                   <Ico className="h-4 w-4" />
                   <span className="truncate">{item.label}</span>

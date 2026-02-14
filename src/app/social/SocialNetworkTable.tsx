@@ -55,18 +55,18 @@ export function SocialNetworkTable() {
 
     return (
         <div>
-            <div className="mb-3 flex items-center justify-between gap-2">
+            <div className="mb-4 flex items-center justify-between gap-2">
                 <Input
                     placeholder="Buscar por nome ou URL..."
                     value={inputSearch}
                     onChange={(e) => setInputSearch(e.target.value)}
-                    className="max-w-sm"
+                    className="w-full md:max-w-sm"
                 />
             </div>
 
-            <div className="overflow-x-auto rounded-md border">
+            <div className="overflow-x-auto rounded-md border border-white/10 bg-black/20">
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="bg-white text-slate-600">
                         <TableRow>
                             <TableHead className="w-[80px]">Ícone</TableHead>
                             <TableHead>Nome</TableHead>

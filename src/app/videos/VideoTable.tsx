@@ -17,8 +17,10 @@ import VideoCoverPreview from "./VideoCoverPreview"
 import { Button } from "@/components/button"
 import VideoDeleteDialog from "./VideoDeleteDialog"
 import VideoEditDialog from "./VideoEditDialog"
+import { useRouter } from "next/navigation"
 
 export default function VideoTable() {
+    const router = useRouter()
     const { loadings, handleLoadings } = useLoadingsContext()
     const { videos, fetchVideos, filteredVideos, pageVideos } = useVideoContext()
     const [coverPreview, setCoverPreview] = useState<CoverPreview | null>(null)
@@ -225,7 +227,7 @@ export default function VideoTable() {
                                                 className="h-8 w-8"
                                                 title="Editar publicações"
                                                 aria-label="Editar publicações"
-                                                onClick={() => setVideoEditing(video)}
+                                                onClick={() => router.push(`/videos/${video.id}/edit`)}
                                             >
                                                 <FiEdit2 className="h-4 w-4" />
                                             </Button>

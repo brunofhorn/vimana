@@ -12,90 +12,89 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export function SocialNetworkForm() {
-    const { handleLoadings } = useLoadingsContext()
-    const { createSocialNetwork } = useSocialNetworkContext()
-    const form = useForm<SocialNetworksFormCreateValues>({
-        resolver: zodResolver(SocialNetworkFormCreateSchema),
-        defaultValues: { name: "", url: "", icon: "" },
-        mode: "onChange",
-    })
+  const { handleLoadings } = useLoadingsContext();
+  const { createSocialNetwork } = useSocialNetworkContext();
+  const form = useForm<SocialNetworksFormCreateValues>({
+    resolver: zodResolver(SocialNetworkFormCreateSchema),
+    defaultValues: { name: "", url: "", icon: "" },
+    mode: "onChange",
+  });
 
-    const { control, handleSubmit, register, formState: { errors, isSubmitting } } = form
+  const {
+    control,
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = form;
 
-    const onSubmit = async (socialData: SocialNetworksFormCreateValues) => {
-        try {
-            handleLoadings({
-                key: 'social',
-                value: true
-            })
+  const onSubmit = async (socialData: SocialNetworksFormCreateValues) => {
+    try {
+      handleLoadings({
+        key: "social",
+        value: true,
+      });
 
-            await createSocialNetwork(socialData)
-            form.reset()
-            toast.success("Sucesso!", { description: "A rede social foi cadastrada com sucesso." })
-        } catch (error) {
-            console.error("[SOCIAL_NETWORKS][CREATE]", error)
-            toast.error("Erro!", { description: "Ocorreu um erro ao tentar cadastrar a rede social." })
-        } finally {
-            handleLoadings({
-                key: 'social',
-                value: false
-            })
-        }
+      await createSocialNetwork(socialData);
+      form.reset();
+      toast.success("Sucesso!", {
+        description: "A rede social foi cadastrada com sucesso.",
+      });
+    } catch (error) {
+      console.error("[SOCIAL_NETWORKS][CREATE]", error);
+      toast.error("Erro!", {
+        description: "Ocorreu um erro ao tentar cadastrar a rede social.",
+      });
+    } finally {
+      handleLoadings({
+        key: "social",
+        value: false,
+      });
     }
+  };
 
-    return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row gap-4 items-start">
-            <div className="flex flex-col flex-1 gap-3">
-                <Label htmlFor="name">Nome</Label>
-                <Input
-                    id="name"
-                    placeholder="Ex: YouTube, Instagram, TikTok"
-                    {...register("name")}
-                />
-                {errors.name && (
-                    <span className="text-xs text-red-600">{errors.name.message}</span>
-                )}
-            </div>
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="flex flex-col gap-3">
+          <Label htmlFor="name">Nome</Label>
+          <Input id="name" placeholder="Ex: YouTube, Instagram, TikTok" {...register("name")} />
+          {errors.name && <span className="text-xs text-red-600">{errors.name.message}</span>}
+        </div>
 
-            <div className="flex flex-col flex-1 gap-3">
-                <Label htmlFor="url">URL Base</Label>
-                <Input id="url" type="url" placeholder="https://..." {...register("url")} />
-                {errors.url && (
-                    <span className="text-xs text-red-600">{errors.url.message}</span>
-                )}
-            </div>
+        <div className="flex flex-col gap-3">
+          <Label htmlFor="url">URL Base</Label>
+          <Input id="url" type="url" placeholder="https://..." {...register("url")} />
+          {errors.url && <span className="text-xs text-red-600">{errors.url.message}</span>}
+        </div>
 
-            <div className="flex flex-col flex-1 gap-3">
-                <Label>Ícone</Label>
-                <Controller
-                    name="icon"
-                    control={control}
-                    render={({ field }) => (
-                        <IconSelect
-                            selectedIcon={field.value}
-                            onIconSelect={field.onChange}
-                            placeholder="Selecione o ícone"
-                        />
-                    )}
-                />
-                {errors.icon && (
-                    <span className="text-xs text-red-600">{errors.icon.message}</span>
-                )}
-            </div>
+        <div className="flex flex-col gap-3">
+          <Label>Icone</Label>
+          <Controller
+            name="icon"
+            control={control}
+            render={({ field }) => (
+              <IconSelect
+                selectedIcon={field.value}
+                onIconSelect={field.onChange}
+                placeholder="Selecione o icone"
+                searchPlaceholder="Buscar rede social..."
+                groupLabel="Redes sociais"
+                className="w-full"
+              />
+            )}
+          />
+          {errors.icon && <span className="text-xs text-red-600">{errors.icon.message}</span>}
+        </div>
+      </div>
 
-            <div className="flex gap-2 items-center mt-6">
-                <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "Cadastrando..." : "Criar"}
-                </Button>
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => form.reset()}
-                    disabled={isSubmitting}
-                >
-                    Cancelar
-                </Button>
-            </div>
-        </form>
-    )
+      <div className="flex flex-wrap gap-2">
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Cadastrando..." : "Criar"}
+        </Button>
+        <Button type="button" variant="outline" onClick={() => form.reset()} disabled={isSubmitting}>
+          Cancelar
+        </Button>
+      </div>
+    </form>
+  );
 }
