@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { ISocialNetwork, SOCIAL_ICON_MAP } from "@/interfaces/social-networks"
 import { Input } from "@/components/input"
 import { Button } from "@/components/button"
@@ -13,11 +13,10 @@ import { SocialNetworkEditDialog } from "./SocialNetworkEditDialog"
 import { SocialNetworkDeleteDialog } from "./SocialNetworkDeleteDialog"
 import { useSocialNetworkContext } from "@/context/SocialNetworkContext"
 import { useLoadingsContext } from "@/context/LoadingsContext"
-import { toast } from "sonner"
 
 export function SocialNetworkTable() {
-    const { loadings, handleLoadings } = useLoadingsContext()
-    const { socialNetworks, fetchSocialNetworks } = useSocialNetworkContext()
+    const { loadings } = useLoadingsContext()
+    const { socialNetworks } = useSocialNetworkContext()
     const [inputSearch, setInputSearch] = useState("")
     const [editing, setEditing] = useState<ISocialNetwork | null>(null)
     const [deleting, setDeleting] = useState<ISocialNetwork | null>(null)
@@ -27,34 +26,6 @@ export function SocialNetworkTable() {
         if (!q) return socialNetworks ?? []
         return socialNetworks?.filter((n) => n.name.toLowerCase().includes(q) || n.url.toLowerCase().includes(q))
     }, [socialNetworks, inputSearch])
-
-    const handleFetchSocialNetworks = useCallback(async () => {
-        try {
-            handleLoadings({
-                key: "social",
-                value: true
-            })
-
-            await fetchSocialNetworks()
-        } catch (error) {
-            console.error("[SOCIAL_NETWORKS][FETCH]", error)
-            const message = error instanceof Error ? error.message : "Falha ao buscar redes sociais.";
-            toast.error("Erro!", { description: message })
-        } finally {
-            handleLoadings({
-                key: "social",
-                value: false
-            })
-        }
-    }, [fetchSocialNetworks, handleLoadings])
-
-    useEffect(() => {
-        (async () => {
-            await Promise.all([
-                handleFetchSocialNetworks()
-            ])
-        })()
-    }, [handleFetchSocialNetworks])
 
     return (
         <div>

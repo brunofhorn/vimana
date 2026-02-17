@@ -23,6 +23,7 @@ import { InputDatePicker } from "@/components/input-date-picker"
 import { useVideoContext } from "@/context/VideoContext"
 import { toast } from "sonner"
 import { getHttpErrorMessage } from "@/services/http-error"
+import { getApiJsonHeaders } from "@/services/http-headers"
 
 const RowSchema = z.object({
     id: z.string().optional(),
@@ -54,7 +55,10 @@ export default function VideoEditDialog({ videoEditing, setVideoEditing }: Video
 
     const loadLinks = useCallback(async () => {
         try {
-            const res = await fetch(`/api/video/${videoEditing?.id}/social`, { cache: "no-store" })
+            const res = await fetch(`/api/video/${videoEditing?.id}/social`, {
+                cache: "no-store",
+                headers: getApiJsonHeaders(),
+            })
             if (!res.ok) {
                 throw new Error(await getHttpErrorMessage(res, "Falha ao carregar links"))
             }

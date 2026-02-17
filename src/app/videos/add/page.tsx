@@ -5,21 +5,26 @@ import { useCallback, useEffect } from "react";
 import { TitlePage } from "@/components/title-page";
 import { Card, CardContent } from "@/components/card";
 import VideoForm from "./VideoForm";
+import { toast } from "sonner";
 
 export default function Videos() {
-    const { fetchSocialNetworks } = useSocialNetworkContext()
+    const { ensureSocialNetworks } = useSocialNetworkContext()
 
-    const handleFetchSocialNetworks = useCallback(async () => {
-        await fetchSocialNetworks()
-    }, [fetchSocialNetworks])
+    const handleInitialData = useCallback(async () => {
+        try {
+            await ensureSocialNetworks()
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : "Falha ao carregar redes sociais.";
+            toast.error("Erro!", { description: message })
+        }
+    }, [ensureSocialNetworks])
 
     useEffect(() => {
-        (async () => {
-            await Promise.all([
-                handleFetchSocialNetworks()
-            ])
-        })()
-    }, [handleFetchSocialNetworks])
+        handleInitialData()
+    }, [handleInitialData])
 
     return (
         <div>

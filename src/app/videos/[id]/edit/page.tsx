@@ -31,7 +31,7 @@ function mapVideoToForm(video: IVideo): VideoFormCreateInput {
 
 export default function VideoEditPage() {
   const params = useParams<{ id: string }>();
-  const { fetchSocialNetworks } = useSocialNetworkContext();
+  const { ensureSocialNetworks } = useSocialNetworkContext();
   const [initialValues, setInitialValues] = useState<VideoFormCreateInput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -46,7 +46,7 @@ export default function VideoEditPage() {
     setIsLoading(true);
 
     try {
-      const [video] = await Promise.all([getVideoById(videoId), fetchSocialNetworks()]);
+      const [video] = await Promise.all([getVideoById(videoId), ensureSocialNetworks()]);
       setInitialValues(mapVideoToForm(video));
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro ao carregar video.";
@@ -54,7 +54,7 @@ export default function VideoEditPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [fetchSocialNetworks, videoId]);
+  }, [ensureSocialNetworks, videoId]);
 
   useEffect(() => {
     loadVideoData();

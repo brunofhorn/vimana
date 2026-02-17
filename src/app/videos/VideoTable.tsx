@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useState } from "react"
 import { useLoadingsContext } from "@/context/LoadingsContext"
 import { useVideoContext } from "@/context/VideoContext"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table"
@@ -18,43 +18,14 @@ import { Button } from "@/components/button"
 import VideoDeleteDialog from "./VideoDeleteDialog"
 import VideoEditDialog from "./VideoEditDialog"
 import { useRouter } from "next/navigation"
-import { toast } from "sonner"
 
 export default function VideoTable() {
     const router = useRouter()
-    const { loadings, handleLoadings } = useLoadingsContext()
-    const { videos, fetchVideos, filteredVideos, pageVideos } = useVideoContext()
+    const { loadings } = useLoadingsContext()
+    const { videos, filteredVideos, pageVideos } = useVideoContext()
     const [coverPreview, setCoverPreview] = useState<CoverPreview | null>(null)
     const [videoEditing, setVideoEditing] = useState<IVideo | null>(null)
     const [videoDeleting, setVideoDeleting] = useState<IVideo | null>(null)
-
-    const handleFetchVideos = useCallback(async () => {
-        try {
-            handleLoadings({
-                key: "video",
-                value: true
-            })
-
-            await fetchVideos()
-        } catch (error) {
-            console.error("[VIDEOS][FETCH]", error)
-            const message = error instanceof Error ? error.message : "Falha ao buscar videos.";
-            toast.error("Erro!", { description: message })
-        } finally {
-            handleLoadings({
-                key: "video",
-                value: false
-            })
-        }
-    }, [fetchVideos, handleLoadings])
-
-    useEffect(() => {
-        (async () => {
-            await Promise.all([
-                handleFetchVideos()
-            ])
-        })()
-    }, [handleFetchVideos])
 
     return (
         <div className="overflow-x-auto rounded-md border">

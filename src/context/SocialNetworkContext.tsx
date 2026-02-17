@@ -8,6 +8,7 @@ import { deleteSocialNetwork, getSocialNetworks, postSocialNetwork, putSocialNet
 type SocialNetworkContextProps = {
     socialNetworks: ISocialNetwork[] | null
     fetchSocialNetworks: () => Promise<void>
+    ensureSocialNetworks: (force?: boolean) => Promise<void>
     createSocialNetwork: (params: SocialNetworksFormCreateValues) => Promise<void>
     updateSocialNetwork: (params: SocialNetworkUpdateInput) => Promise<void>
     removeSocialNetwork: (id: string) => Promise<void>
@@ -20,12 +21,32 @@ export const SocialNetworkContext = createContext<SocialNetworkContextProps>(
 export const SocialNetworkContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const [socialNetworks, setSocialNetworks] = useState<ISocialNetwork[] | null>(null)
     const backupRef = useRef<ISocialNetwork[] | null>(null);
+    const inFlightFetchRef = useRef<Promise<void> | null>(null);
 
     const fetchSocialNetworks = useCallback(async () => {
         const socialNetworkResponse = await getSocialNetworks()
 
         setSocialNetworks(socialNetworkResponse)
     }, [])
+
+    const ensureSocialNetworks = useCallback(async (force = false) => {
+        if (!force && socialNetworks !== null) return;
+
+        if (inFlightFetchRef.current) {
+            await inFlightFetchRef.current;
+            return;
+        }
+
+        inFlightFetchRef.current = (async () => {
+            try {
+                await fetchSocialNetworks();
+            } finally {
+                inFlightFetchRef.current = null;
+            }
+        })();
+
+        await inFlightFetchRef.current;
+    }, [fetchSocialNetworks, socialNetworks]);
 
     const createSocialNetwork = useCallback(async (newSocialNetwork: SocialNetworksFormCreateValues) => {
         const tempId = `tmp_${Math.random().toString(36).slice(2)}`;
@@ -102,6 +123,7 @@ export const SocialNetworkContextProvider: FC<PropsWithChildren> = ({ children }
         <SocialNetworkContext.Provider value={{
             socialNetworks,
             fetchSocialNetworks,
+            ensureSocialNetworks,
             createSocialNetwork,
             updateSocialNetwork,
             removeSocialNetwork

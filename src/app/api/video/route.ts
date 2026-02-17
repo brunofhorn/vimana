@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
 import {
@@ -36,16 +36,113 @@ function serializeVideo(video: VideoWithLinks) {
   };
 }
 
-export async function GET() {
-  try {
-    const videos = await prisma.video.findMany({
-      orderBy: { created_at: "desc" },
-      include: {
-        links: { include: { social_network: true } },
-      },
-    });
+function parseYesNo(value: string | null): boolean | null {
+  if (value === "S") return true;
+  if (value === "N") return false;
+  return null;
+}
 
-    return NextResponse.json(videos.map(serializeVideo), { status: 200 });
+function parsePositiveInt(value: string | null, fallback: number): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return Math.floor(parsed);
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const sp = req.nextUrl.searchParams;
+
+    const query = (sp.get("query") ?? "").trim();
+    const social = (sp.get("social") ?? "").trim();
+    const postedDate = (sp.get("postedDate") ?? "").trim();
+    const publi = parseYesNo(sp.get("publi"));
+    const repost = parseYesNo(sp.get("repost"));
+    const order = sp.get("order") === "asc" ? "asc" : "desc";
+    const page = parsePositiveInt(sp.get("page"), 1);
+    const rawPageSize = (sp.get("pageSize") ?? "20").trim().toUpperCase();
+    const isAll = rawPageSize === "ALL";
+    const pageSize = isAll
+      ? 0
+      : Math.min(parsePositiveInt(rawPageSize, 20), 100);
+
+    const where: Prisma.VideoWhereInput = {};
+
+    if (query) {
+      where.OR = [
+        { title: { contains: query, mode: "insensitive" } },
+        { description: { contains: query, mode: "insensitive" } },
+        { raw_video_url: { contains: query, mode: "insensitive" } },
+        {
+          links: {
+            some: {
+              OR: [
+                { url: { contains: query, mode: "insensitive" } },
+                {
+                  social_network: { name: { contains: query, mode: "insensitive" } },
+                },
+              ],
+            },
+          },
+        },
+      ];
+    }
+
+    if (social) {
+      where.links = { some: { socialnetwork_id: social } };
+    }
+
+    if (postedDate) {
+      const d = new Date(`${postedDate}T00:00:00.000Z`);
+      if (!Number.isNaN(d.getTime())) {
+        const end = new Date(d);
+        end.setUTCDate(end.getUTCDate() + 1);
+
+        where.links = {
+          some: {
+            ...(social ? { socialnetwork_id: social } : {}),
+            posted_at: {
+              gte: d,
+              lt: end,
+            },
+          },
+        };
+      }
+    }
+
+    if (publi !== null) {
+      where.is_sponsored = publi;
+    }
+
+    if (repost !== null) {
+      where.is_repost = repost;
+    }
+
+    const [videos, total] = await prisma.$transaction([
+      prisma.video.findMany({
+        where,
+        orderBy: { created_at: order },
+        include: {
+          links: { include: { social_network: true } },
+        },
+        ...(isAll
+          ? {}
+          : {
+              skip: (page - 1) * pageSize,
+              take: pageSize,
+            }),
+      }),
+      prisma.video.count({ where }),
+    ]);
+
+    return NextResponse.json(
+      {
+        items: videos.map(serializeVideo),
+        total,
+        page,
+        pageSize: isAll ? "ALL" : pageSize,
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("[VIDEOS][GET]", err);
 

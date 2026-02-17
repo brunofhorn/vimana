@@ -1,11 +1,12 @@
 import { ISocialNetwork, SocialNetworkUpdateInput } from "@/interfaces/social-networks";
 import { SocialNetworksFormCreateValues } from "@/schemas/social";
 import { getHttpErrorMessage } from "@/services/http-error";
+import { getApiJsonHeaders } from "@/services/http-headers";
 
 export async function getSocialNetworks() {
   const res = await fetch("/api/social", {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: getApiJsonHeaders(),
   });
 
   if (!res.ok) {
@@ -24,7 +25,7 @@ export async function postSocialNetwork(
 ) {
   const res = await fetch("/api/social", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getApiJsonHeaders(),
     body: JSON.stringify(social),
   });
 
@@ -42,7 +43,7 @@ export async function postSocialNetwork(
 export async function putSocialNetwork({ id, data }: SocialNetworkUpdateInput) {
   const res = await fetch(`/api/social/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: getApiJsonHeaders(),
     body: JSON.stringify(data),
   });
 
@@ -60,7 +61,7 @@ export async function putSocialNetwork({ id, data }: SocialNetworkUpdateInput) {
 export async function deleteSocialNetwork(id: string) {
   const res = await fetch(`/api/social/${id}`, {
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
+    headers: getApiJsonHeaders(),
   });
 
   if (!res.ok) {

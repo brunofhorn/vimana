@@ -6,9 +6,10 @@ import { Card, CardContent } from "@/components/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/select";
 import { Badge } from "@/components/badge";
 import { Loader } from "@/components/loading";
-import { useVideoContext } from "@/context/VideoContext";
 import { IVideo } from "@/interfaces/videos";
 import { formatDateBR } from "@/utils/format-date-to-br";
+import { getVideos } from "@/services/video";
+import { toast } from "sonner";
 
 type PeriodValue = "7" | "30" | "90" | "ALL";
 
@@ -80,7 +81,7 @@ function toLinkRows(videos: IVideo[]): VideoLinkRow[] {
 }
 
 export default function ReportsPage() {
-  const { videos, fetchVideos } = useVideoContext();
+  const [videos, setVideos] = useState<IVideo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [period, setPeriod] = useState<PeriodValue>("30");
   const [socialId, setSocialId] = useState<string>("ALL");
@@ -89,14 +90,25 @@ export default function ReportsPage() {
     async function load() {
       setIsLoading(true);
       try {
-        await fetchVideos();
+        const response = await getVideos({
+          page: 1,
+          pageSize: "ALL",
+          order: "desc",
+        });
+        setVideos(response.items);
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Falha ao carregar dados de relatorios.";
+        toast.error("Erro!", { description: message });
       } finally {
         setIsLoading(false);
       }
     }
 
     load();
-  }, [fetchVideos]);
+  }, []);
 
   const allVideos = useMemo(() => videos ?? [], [videos]);
 

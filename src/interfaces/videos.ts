@@ -79,3 +79,21 @@ export type VideoSocialPutResponse = {
   video_id: string;
   links: VideoSocialLinkDTO[];
 };
+
+export type VideoListQuery = {
+  query?: string;
+  social?: string;
+  postedDate?: string;
+  publi?: YesNoAll;
+  repost?: YesNoAll;
+  order?: "asc" | "desc";
+  page?: number;
+  pageSize?: PageSize;
+};
+
+export type VideoListResponse = {
+  items: IVideo[];
+  total: number;
+  page: number;
+  pageSize: number | "ALL";
+};
