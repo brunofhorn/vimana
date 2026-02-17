@@ -24,7 +24,7 @@ function toDate(value: unknown): Date {
 const LinkInputSchema = z.object({
   id: z.string().optional(),
   socialnetwork_id: z.string().min(1, "Selecione a rede"),
-  url: z.string().url("URL inválida"),
+  url: z.string().url("URL invÃ¡lida"),
   posted_at: z.preprocess(toDate, z.date()),
 });
 
@@ -32,7 +32,7 @@ const BodySchema = z.object({
   links: z.array(LinkInputSchema),
 });
 
-/** Carrega as postagens do vídeo (com dados da rede) */
+/** Carrega as postagens do vÃ­deo (com dados da rede) */
 export async function GET(_req: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
@@ -52,23 +52,23 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
   }
 }
 
-/** Substitui o conjunto de links do vídeo por `links` (create/update/delete) */
+/** Substitui o conjunto de links do vÃ­deo por `links` (create/update/delete) */
 export async function PUT(_req: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
     const json = await _req.json();
     const { links } = BodySchema.parse(json);
 
-    // garante vídeo existente
+    // garante vÃ­deo existente
     const video = await prisma.video.findUnique({ where: { id: id } });
     if (!video) {
       return NextResponse.json(
-        { message: "Vídeo não encontrado" },
+        { message: "VÃ­deo nÃ£o encontrado" },
         { status: 404 }
       );
     }
 
-    // transação: delete removidos + upsert/updates + creates
+    // transaÃ§Ã£o: delete removidos + upsert/updates + creates
     const updated = await prisma.$transaction(async (tx) => {
       const existing = await tx.videoLink.findMany({
         where: { video_id: id },
@@ -90,7 +90,7 @@ export async function PUT(_req: NextRequest, { params }: RouteContext) {
         const key = `${id}::${l.socialnetwork_id}`;
         if (seen.has(key)) {
           return Promise.reject(
-            new Error("Redes duplicadas no formulário para o mesmo vídeo.")
+            new Error("Redes duplicadas no formulÃ¡rio para o mesmo vÃ­deo.")
           );
         }
         seen.add(key);
@@ -99,7 +99,7 @@ export async function PUT(_req: NextRequest, { params }: RouteContext) {
       // Atualiza/cria
       for (const l of links) {
         if (l.id) {
-          // evitar colisão com outra linha do mesmo vídeo/rede
+          // evitar colisÃ£o com outra linha do mesmo vÃ­deo/rede
           const other = await tx.videoLink.findFirst({
             where: {
               video_id: id,
@@ -110,7 +110,7 @@ export async function PUT(_req: NextRequest, { params }: RouteContext) {
           });
           if (other) {
             return Promise.reject(
-              new Error("Já existe uma postagem para essa rede neste vídeo.")
+              new Error("JÃ¡ existe uma postagem para essa rede neste vÃ­deo.")
             );
           }
 
@@ -143,20 +143,29 @@ export async function PUT(_req: NextRequest, { params }: RouteContext) {
       return current;
     });
 
-    return NextResponse.json({ id, links: updated });
+    return NextResponse.json({
+      video_id: id,
+      links: updated.map((link) => ({
+        id: link.id,
+        social_network_id: link.socialnetwork_id,
+        url: link.url,
+        posted_at: link.posted_at,
+        social_network: link.social_network,
+      })),
+    });
   } catch (err: any) {
     console.error("[VIDEO_LINKS][PUT]", err);
 
     if (err?.name === "ZodError") {
       return NextResponse.json(
-        { message: "Dados inválidos", issues: err.issues },
+        { message: "Dados invÃ¡lidos", issues: err.issues },
         { status: 400 }
       );
     }
     if (err?.code === "P2002") {
       // quebra de unique (video_id, socialnetwork_id)
       return NextResponse.json(
-        { message: "Já existe uma postagem para essa rede neste vídeo." },
+        { message: "JÃ¡ existe uma postagem para essa rede neste vÃ­deo." },
         { status: 409 }
       );
     }

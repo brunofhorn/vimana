@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { IVideo, VideoFilters, VideoSocialPutPayload } from "@/interfaces/videos";
@@ -140,10 +140,10 @@ export const VideoContextProvider: FC<PropsWithChildren> = ({ children }) => {
                     links: resp.links.map((l): IVideo["links"][number] => ({
                         id: l.id,
                         video_id: videoId,
-                        social_network_id: l.socialnetwork_id, // converte para o seu modelo
+                        social_network_id: l.social_network_id,
                         url: l.url,
-                        posted_at: l.posted_at,                // string | Date
-                        social_network: l.social_network,      // <- usa o objeto COMPLETO da API
+                        posted_at: l.posted_at,
+                        social_network: l.social_network,
                     })),
                 };
             });

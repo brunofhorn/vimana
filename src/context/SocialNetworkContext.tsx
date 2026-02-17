@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useRef, useState } from "react"
 import { ISocialNetwork } from "@/interfaces/social-networks"
@@ -29,14 +29,15 @@ export const SocialNetworkContextProvider: FC<PropsWithChildren> = ({ children }
 
     const createSocialNetwork = useCallback(async (newSocialNetwork: SocialNetworksFormCreateValues) => {
         const tempId = `tmp_${Math.random().toString(36).slice(2)}`;
+        const now = new Date().toISOString();
+
         const optimistic: ISocialNetwork = {
             id: tempId,
             name: newSocialNetwork.name,
             url: newSocialNetwork.url,
             icon: newSocialNetwork.icon,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            publishedVideos: []
+            created_at: now,
+            updated_at: now,
         };
 
         setSocialNetworks(prev => (prev ? [optimistic, ...prev] : [optimistic]));
@@ -61,7 +62,7 @@ export const SocialNetworkContextProvider: FC<PropsWithChildren> = ({ children }
 
             return list.map(s =>
                 s.id === socialNetwork.id
-                    ? { ...s, ...socialNetwork, updatedAt: optimisticUpdatedAt }
+                    ? { ...s, ...socialNetwork, updated_at: optimisticUpdatedAt }
                     : s
             );
         });

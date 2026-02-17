@@ -1,4 +1,4 @@
-import { SocialNetworksFormCreateValues } from "@/schemas/social";
+﻿import { SocialNetworksFormCreateValues } from "@/schemas/social";
 import { UseFormReturn } from "react-hook-form";
 import { IconType } from "react-icons";
 import { FiVideo } from "react-icons/fi";
@@ -19,10 +19,9 @@ export interface ISocialNetwork {
   id: string;
   name: string;
   url: string;
-  icon: string
-  createdAt: string;
-  updatedAt: string;
-  publishedVideos: string[];
+  icon: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface SocialNetworkFormProps {
