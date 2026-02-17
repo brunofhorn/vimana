@@ -14,7 +14,7 @@ type PeriodValue = "7" | "30" | "90" | "ALL";
 
 type VideoLinkRow = {
   id: string;
-  socialnetwork_id: string;
+  social_network_id: string;
   socialName: string;
   posted_at: string | Date;
   video: IVideo;
@@ -71,7 +71,7 @@ function toLinkRows(videos: IVideo[]): VideoLinkRow[] {
   return videos.flatMap((video) =>
     (video.links ?? []).map((link) => ({
       id: link.id,
-      socialnetwork_id: link.social_network_id,
+      social_network_id: link.social_network_id,
       socialName: link.social_network?.name ?? "Sem rede",
       posted_at: link.posted_at,
       video,
@@ -132,7 +132,7 @@ export default function ReportsPage() {
 
       if (socialId === "ALL") return true;
 
-      return link.socialnetwork_id === socialId;
+      return link.social_network_id === socialId;
     });
   }, [allVideos, period, socialId]);
 

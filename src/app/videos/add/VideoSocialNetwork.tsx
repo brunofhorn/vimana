@@ -44,7 +44,7 @@ export default function VideoSocialNetwork({ index, socialNetworks, onRemove }: 
       <div className="flex flex-col gap-2">
         <Label>Rede</Label>
         <Controller
-          name={`${base}.socialnetwork_id`}
+          name={`${base}.social_network_id`}
           control={control}
           render={({ field }) => (
             <IconSelect
@@ -58,9 +58,9 @@ export default function VideoSocialNetwork({ index, socialNetworks, onRemove }: 
             />
           )}
         />
-        {errors.links?.[index]?.socialnetwork_id && (
+        {errors.links?.[index]?.social_network_id && (
           <span className="text-xs text-red-600">
-            {errors.links[index]?.socialnetwork_id?.message as string}
+            {errors.links[index]?.social_network_id?.message as string}
           </span>
         )}
       </div>

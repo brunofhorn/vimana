@@ -1,5 +1,6 @@
-import { ISocialNetwork } from "@/interfaces/social-networks";
+import { ISocialNetwork, SocialNetworkUpdateInput } from "@/interfaces/social-networks";
 import { SocialNetworksFormCreateValues } from "@/schemas/social";
+import { getHttpErrorMessage } from "@/services/http-error";
 
 export async function getSocialNetworks() {
   const res = await fetch("/api/social", {
@@ -8,7 +9,9 @@ export async function getSocialNetworks() {
   });
 
   if (!res.ok) {
-    throw new Error("Falha ao buscar redes sociais.");
+    throw new Error(
+      await getHttpErrorMessage(res, "Falha ao buscar redes sociais.")
+    );
   }
 
   const data = (await res.json()) as ISocialNetwork[];
@@ -26,7 +29,9 @@ export async function postSocialNetwork(
   });
 
   if (!res.ok) {
-    throw new Error("Falha ao criar a rede social.");
+    throw new Error(
+      await getHttpErrorMessage(res, "Falha ao criar a rede social.")
+    );
   }
 
   const created = (await res.json()) as ISocialNetwork;
@@ -34,15 +39,17 @@ export async function postSocialNetwork(
   return created;
 }
 
-export async function putSocialNetwork(social: ISocialNetwork) {
-  const res = await fetch(`/api/social/${social.id}`, {
+export async function putSocialNetwork({ id, data }: SocialNetworkUpdateInput) {
+  const res = await fetch(`/api/social/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(social),
+    body: JSON.stringify(data),
   });
 
   if (!res.ok) {
-    throw new Error("Falha ao criar a rede social.");
+    throw new Error(
+      await getHttpErrorMessage(res, "Falha ao atualizar a rede social.")
+    );
   }
 
   const updated = (await res.json()) as ISocialNetwork;
@@ -56,5 +63,9 @@ export async function deleteSocialNetwork(id: string) {
     headers: { "Content-Type": "application/json" },
   });
 
-  return res;
+  if (!res.ok) {
+    throw new Error(
+      await getHttpErrorMessage(res, "Falha ao excluir a rede social.")
+    );
+  }
 }

@@ -1,4 +1,4 @@
-﻿import { ISocialNetwork } from "./social-networks";
+import { ISocialNetwork } from "./social-networks";
 
 export interface IVideo {
   id: string;
@@ -61,7 +61,7 @@ export type VideoFilters = {
 export type VideoSocialPutPayload = {
   links: {
     id?: string;
-    socialnetwork_id: string;
+    social_network_id: string;
     url: string;
     posted_at: string;
   }[];

@@ -13,6 +13,7 @@ import { SocialNetworkEditDialog } from "./SocialNetworkEditDialog"
 import { SocialNetworkDeleteDialog } from "./SocialNetworkDeleteDialog"
 import { useSocialNetworkContext } from "@/context/SocialNetworkContext"
 import { useLoadingsContext } from "@/context/LoadingsContext"
+import { toast } from "sonner"
 
 export function SocialNetworkTable() {
     const { loadings, handleLoadings } = useLoadingsContext()
@@ -37,6 +38,8 @@ export function SocialNetworkTable() {
             await fetchSocialNetworks()
         } catch (error) {
             console.error("[SOCIAL_NETWORKS][FETCH]", error)
+            const message = error instanceof Error ? error.message : "Falha ao buscar redes sociais.";
+            toast.error("Erro!", { description: message })
         } finally {
             handleLoadings({
                 key: "social",

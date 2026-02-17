@@ -24,7 +24,10 @@ export function SocialNetworkDeleteDialog({ deleting, setDeleting }: SocialNetwo
                 toast.success("Sucesso!", { description: "A rede social foi excluída com sucesso." })
             } catch (error) {
                 console.error("[SOCIAL_NETWORKS][DELETE]", error)
-                toast.error("Erro!", { description: "Ocorreu um erro ao tentar excluir a rede social." })
+                const message = error instanceof Error
+                    ? error.message
+                    : "Ocorreu um erro ao tentar excluir a rede social."
+                toast.error("Erro!", { description: message })
             } finally {
                 handleLoadings({
                     key: "social_deleting",

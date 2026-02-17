@@ -18,6 +18,7 @@ import { Button } from "@/components/button"
 import VideoDeleteDialog from "./VideoDeleteDialog"
 import VideoEditDialog from "./VideoEditDialog"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export default function VideoTable() {
     const router = useRouter()
@@ -36,7 +37,9 @@ export default function VideoTable() {
 
             await fetchVideos()
         } catch (error) {
-            console.error("[SOCIAL_NETWORKS][FETCH]", error)
+            console.error("[VIDEOS][FETCH]", error)
+            const message = error instanceof Error ? error.message : "Falha ao buscar videos.";
+            toast.error("Erro!", { description: message })
         } finally {
             handleLoadings({
                 key: "video",

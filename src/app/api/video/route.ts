@@ -10,6 +10,32 @@ import { Prisma } from "@/generated/prisma";
 
 export const dynamic = "force-dynamic";
 
+type VideoWithLinks = Prisma.VideoGetPayload<{
+  include: { links: { include: { social_network: true } } };
+}>;
+
+function toTagsArray(tags: Prisma.JsonValue | null): string[] {
+  if (!Array.isArray(tags)) return [];
+
+  return tags
+    .map((tag) => (typeof tag === "string" ? tag.trim() : ""))
+    .filter(Boolean);
+}
+
+function serializeVideo(video: VideoWithLinks) {
+  return {
+    ...video,
+    tags: toTagsArray((video.tags as Prisma.JsonValue | null) ?? null),
+    links: video.links.map((link) => {
+      const { socialnetwork_id, ...rest } = link;
+      return {
+        ...rest,
+        social_network_id: socialnetwork_id,
+      };
+    }),
+  };
+}
+
 export async function GET() {
   try {
     const videos = await prisma.video.findMany({
@@ -19,11 +45,11 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(videos, { status: 200 });
+    return NextResponse.json(videos.map(serializeVideo), { status: 200 });
   } catch (err) {
     console.error("[VIDEOS][GET]", err);
 
-    return handleErrorResponse(err, "Erro ao listar os vídeos.");
+    return handleErrorResponse(err, "Erro ao listar os vÃ­deos.");
   }
 }
 
@@ -43,7 +69,7 @@ export async function POST(req: Request) {
         raw_video_url: data.raw_video_url,
         links: {
           create: data.links.map((l) => ({
-            socialnetwork_id: l.socialnetwork_id,
+            socialnetwork_id: l.social_network_id,
             url: l.url,
             posted_at: l.posted_at,
           })),
@@ -54,11 +80,11 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(created, { status: 201 });
+    return NextResponse.json(serializeVideo(created), { status: 201 });
   } catch (err: unknown) {
     if (err instanceof ZodError) {
       return NextResponse.json(
-        { message: "Dados inválidos", issues: err.issues },
+        { message: "Dados invÃ¡lidos", issues: err.issues },
         { status: 400 }
       );
     }
@@ -70,7 +96,7 @@ export async function POST(req: Request) {
     }
     console.error("[VIDEOS][POST]", err);
     return NextResponse.json(
-      { message: "Erro ao criar vídeo" },
+      { message: "Erro ao criar vÃ­deo" },
       { status: 500 }
     );
   }

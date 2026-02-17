@@ -32,12 +32,15 @@ export function SocialNetworkEditDialog({ editing, setEditing }: SocialNetworkEd
             })
 
             try {
-                await updateSocialNetwork({ ...editing, ...socialData })
+                await updateSocialNetwork({ id: editing.id, data: socialData })
                 setEditing(null)
                 toast.success("Sucesso!", { description: "A rede social foi atualizada com sucesso." })
             } catch (error) {
                 console.error("[SOCIAL_NETWORKS][UPDATE]", error)
-                toast.error("Erro!", { description: "Ocorreu um erro ao tentar atualizar a rede social." })
+                const message = error instanceof Error
+                    ? error.message
+                    : "Ocorreu um erro ao tentar atualizar a rede social."
+                toast.error("Erro!", { description: message })
             } finally {
                 handleLoadings({
                     key: "social_editing",

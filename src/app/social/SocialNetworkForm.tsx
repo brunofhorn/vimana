@@ -41,8 +41,12 @@ export function SocialNetworkForm() {
       });
     } catch (error) {
       console.error("[SOCIAL_NETWORKS][CREATE]", error);
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Ocorreu um erro ao tentar cadastrar a rede social.";
       toast.error("Erro!", {
-        description: "Ocorreu um erro ao tentar cadastrar a rede social.",
+        description: message,
       });
     } finally {
       handleLoadings({

@@ -21,18 +21,11 @@ function mapVideoToForm(video: IVideo): VideoFormCreateInput {
     is_sponsored: Boolean(video.is_sponsored),
     cover_image_url: video.cover_image_url ?? "",
     raw_video_url: video.raw_video_url ?? "",
-    links: (video.links ?? []).map((link) => {
-      const socialNetworkId =
-        (link as { socialnetwork_id?: string; social_network_id?: string }).socialnetwork_id ??
-        link.social_network_id ??
-        "";
-
-      return {
-        socialnetwork_id: socialNetworkId,
-        url: link.url,
-        posted_at: link.posted_at ? new Date(link.posted_at) : new Date(),
-      };
-    }),
+    links: (video.links ?? []).map((link) => ({
+      social_network_id: link.social_network_id ?? "",
+      url: link.url,
+      posted_at: link.posted_at ? new Date(link.posted_at) : new Date(),
+    })),
   };
 }
 

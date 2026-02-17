@@ -24,6 +24,11 @@ export interface ISocialNetwork {
   updated_at: string;
 }
 
+export type SocialNetworkUpdateInput = {
+  id: string;
+  data: SocialNetworksFormCreateValues;
+};
+
 export interface SocialNetworkFormProps {
   form: UseFormReturn<SocialNetworksFormCreateValues>;
   onSubmit: (socialData: SocialNetworksFormCreateValues) => Promise<void>;

@@ -1,7 +1,7 @@
 ﻿"use client"
 
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useRef, useState } from "react"
-import { ISocialNetwork } from "@/interfaces/social-networks"
+import { ISocialNetwork, SocialNetworkUpdateInput } from "@/interfaces/social-networks"
 import { SocialNetworksFormCreateValues } from "@/schemas/social"
 import { deleteSocialNetwork, getSocialNetworks, postSocialNetwork, putSocialNetwork } from "@/services/social"
 
@@ -9,7 +9,7 @@ type SocialNetworkContextProps = {
     socialNetworks: ISocialNetwork[] | null
     fetchSocialNetworks: () => Promise<void>
     createSocialNetwork: (params: SocialNetworksFormCreateValues) => Promise<void>
-    updateSocialNetwork: (params: ISocialNetwork) => Promise<void>
+    updateSocialNetwork: (params: SocialNetworkUpdateInput) => Promise<void>
     removeSocialNetwork: (id: string) => Promise<void>
 }
 
@@ -51,24 +51,24 @@ export const SocialNetworkContextProvider: FC<PropsWithChildren> = ({ children }
         }
     }, [setSocialNetworks]);
 
-    const updateSocialNetwork = useCallback(async (socialNetwork: ISocialNetwork) => {
+    const updateSocialNetwork = useCallback(async ({ id, data }: SocialNetworkUpdateInput) => {
         setSocialNetworks(prev => {
             backupRef.current = prev ?? [];
             const list = prev ?? [];
             const optimisticUpdatedAt = new Date().toISOString();
 
-            const exists = list.some(s => s.id === socialNetwork.id);
+            const exists = list.some(s => s.id === id);
             if (!exists) return list;
 
             return list.map(s =>
-                s.id === socialNetwork.id
-                    ? { ...s, ...socialNetwork, updated_at: optimisticUpdatedAt }
+                s.id === id
+                    ? { ...s, ...data, updated_at: optimisticUpdatedAt }
                     : s
             );
         });
 
         try {
-            const saved = await putSocialNetwork(socialNetwork);
+            const saved = await putSocialNetwork({ id, data });
 
             setSocialNetworks(prev => {
                 const list = prev ?? [];

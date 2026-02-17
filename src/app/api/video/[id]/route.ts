@@ -8,12 +8,30 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+type VideoWithLinks = Prisma.VideoGetPayload<{
+  include: { links: { include: { social_network: true } } };
+}>;
+
 function toTagsArray(tags: Prisma.JsonValue | null): string[] {
   if (!Array.isArray(tags)) return [];
 
   return tags
     .map((tag) => (typeof tag === "string" ? tag.trim() : ""))
     .filter(Boolean);
+}
+
+function serializeVideo(video: VideoWithLinks) {
+  return {
+    ...video,
+    tags: toTagsArray((video.tags as Prisma.JsonValue | null) ?? null),
+    links: video.links.map((link) => {
+      const { socialnetwork_id, ...rest } = link;
+      return {
+        ...rest,
+        social_network_id: socialnetwork_id,
+      };
+    }),
+  };
 }
 
 export async function GET(_req: NextRequest, { params }: RouteContext) {
@@ -31,12 +49,7 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ message: "Video nao encontrado" }, { status: 404 });
     }
 
-    const normalized = {
-      ...video,
-      tags: toTagsArray((video.tags as Prisma.JsonValue | null) ?? null),
-    };
-
-    return NextResponse.json(normalized, { status: 200 });
+    return NextResponse.json(serializeVideo(video), { status: 200 });
   } catch (err) {
     console.error("[VIDEOS][GET_BY_ID]", err);
     return NextResponse.json({ message: "Erro ao buscar video" }, { status: 500 });
@@ -75,7 +88,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
         await tx.videoLink.createMany({
           data: data.links.map((link) => ({
             video_id: id,
-            socialnetwork_id: link.socialnetwork_id,
+            socialnetwork_id: link.social_network_id,
             url: link.url,
             posted_at: link.posted_at,
           })),
@@ -94,7 +107,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ message: "Video nao encontrado" }, { status: 404 });
     }
 
-    return NextResponse.json(updated, { status: 200 });
+    return NextResponse.json(serializeVideo(updated), { status: 200 });
   } catch (err: unknown) {
     if (err instanceof PrismaClientKnownRequestError) {
       if (err.code === "P2002") {

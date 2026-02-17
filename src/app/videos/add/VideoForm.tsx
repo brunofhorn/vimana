@@ -37,7 +37,7 @@ const EMPTY_FORM_VALUES: VideoFormCreateInput = {
   is_sponsored: false,
   cover_image_url: "",
   raw_video_url: "",
-  links: [{ socialnetwork_id: "", url: "", posted_at: new Date() }],
+  links: [{ social_network_id: "", url: "", posted_at: new Date() }],
 };
 
 export default function VideoForm({
@@ -82,7 +82,7 @@ export default function VideoForm({
     }
 
     for (const link of data.links) {
-      if (!link.socialnetwork_id || !link.url || !link.posted_at) {
+      if (!link.social_network_id || !link.url || !link.posted_at) {
         window.alert("Preencha rede, URL e data de postagem em todas as linhas.");
         return;
       }
@@ -253,7 +253,7 @@ export default function VideoForm({
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => append({ socialnetwork_id: "", url: "", posted_at: new Date() })}
+              onClick={() => append({ social_network_id: "", url: "", posted_at: new Date() })}
             >
               <FiPlus className="mr-2 h-4 w-4" />
               Adicionar rede

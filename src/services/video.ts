@@ -4,6 +4,7 @@ import {
   VideoSocialPutResponse,
 } from "@/interfaces/videos";
 import { VideoFormCreateInput } from "@/schemas/video";
+import { getHttpErrorMessage } from "@/services/http-error";
 
 export async function getVideos() {
   const res = await fetch("/api/video", {
@@ -12,7 +13,7 @@ export async function getVideos() {
   });
 
   if (!res.ok) {
-    throw new Error("Falha ao buscar videos.");
+    throw new Error(await getHttpErrorMessage(res, "Falha ao buscar videos."));
   }
 
   const data = (await res.json()) as IVideo[];
@@ -27,12 +28,7 @@ export async function getVideoById(videoId: string): Promise<IVideo> {
   });
 
   if (!res.ok) {
-    let message = "Falha ao carregar video.";
-    try {
-      const err = (await res.json()) as { message?: string };
-      if (typeof err?.message === "string") message = err.message;
-    } catch {}
-    throw new Error(message);
+    throw new Error(await getHttpErrorMessage(res, "Falha ao carregar video."));
   }
 
   return (await res.json()) as IVideo;
@@ -48,8 +44,7 @@ export async function createVideo(
   });
 
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.message || "Falha ao criar video");
+    throw new Error(await getHttpErrorMessage(res, "Falha ao criar video"));
   }
 
   const data: IVideo = await res.json();
@@ -68,12 +63,7 @@ export async function updateVideo(
   });
 
   if (!res.ok) {
-    let message = "Falha ao atualizar video.";
-    try {
-      const err = (await res.json()) as { message?: string };
-      if (typeof err?.message === "string") message = err.message;
-    } catch {}
-    throw new Error(message);
+    throw new Error(await getHttpErrorMessage(res, "Falha ao atualizar video."));
   }
 
   return (await res.json()) as IVideo;
@@ -90,12 +80,9 @@ export async function putVideoSocial(
   });
 
   if (!res.ok) {
-    let message = "Falha ao salvar redes do video";
-    try {
-      const err = (await res.json()) as { message?: string };
-      if (typeof err?.message === "string") message = err.message;
-    } catch {}
-    throw new Error(message);
+    throw new Error(
+      await getHttpErrorMessage(res, "Falha ao salvar redes do video")
+    );
   }
 
   const data = (await res.json()) as VideoSocialPutResponse;
@@ -109,12 +96,7 @@ export async function deleteVideo(videoId: string) {
   });
 
   if (!res.ok) {
-    let message = "Falha ao remover o video";
-    try {
-      const err = (await res.json()) as { message?: string };
-      if (typeof err?.message === "string") message = err.message;
-    } catch {}
-    throw new Error(message);
+    throw new Error(await getHttpErrorMessage(res, "Falha ao remover o video"));
   }
 
   return res;
