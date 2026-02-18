@@ -39,16 +39,16 @@ export function SocialNetworkTable() {
             </div>
 
             <div className="overflow-x-auto rounded-md border border-white/10 bg-black/20">
-                <Table className="border border-white/5">
-                    <TableHeader className="bg-white/5 text-white">
+                <Table>
+                    <TableHeader className="bg-white text-slate-600">
                         <TableRow>
-                            <TableHead className="w-20 text-white hover:text-white">Ícone</TableHead>
-                            <TableHead className="text-white hover:text-white">Nome</TableHead>
-                            <TableHead className="text-white hover:text-white">URL</TableHead>
-                            <TableHead className="w-30 text-center text-white hover:text-white">Ações</TableHead>
+                            <TableHead className="w-20">Ícone</TableHead>
+                            <TableHead>Nome</TableHead>
+                            <TableHead>URL</TableHead>
+                            <TableHead className="w-30 text-center">Ações</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody className="bg-white/5 text-white">
+                    <TableBody className="bg-white/5 text-white border border-white">
                         {loadings.social ? (
                             <TableRow>
                                 <TableCell colSpan={4} className="py-8 text-center text-sm text-muted-foreground">

@@ -232,11 +232,11 @@ export default function ReportsPage() {
     <div>
       <TitlePage title="Relatorios" />
 
-      <Card className="bg-white/5 border-white/5">
+      <Card className="bg-white/5 border-white/5 text-white">
         <CardContent className="mt-6">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div>
-              <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">Periodo</p>
+              <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">Período</p>
               <Select value={period} onValueChange={(v) => setPeriod(v as PeriodValue)}>
                 <SelectTrigger className="w-full md:max-w-xs">
                   <SelectValue placeholder="Selecione o periodo" />
@@ -271,53 +271,53 @@ export default function ReportsPage() {
       </Card>
 
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <Card className="bg-white/5 border-white/5">
+        <Card className="bg-white/5 border-white/5 text-white">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Videos cadastrados</p>
+            <p className="text-sm text-muted-foreground">Vídeos cadastrados</p>
             <p className="text-3xl font-bold">{kpis.totalVideos}</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/5 border-white/5">
+        <Card className="bg-white/5 border-white/5 text-white">
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">Postagens nas redes</p>
             <p className="text-3xl font-bold">{kpis.totalPosts}</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/5 border-white/5">
+        <Card className="bg-white/5 border-white/5 text-white">
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">Taxa de publi</p>
             <p className="text-3xl font-bold">{kpis.publiRate}</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/5 border-white/5">
+        <Card className="bg-white/5 border-white/5 text-white">
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">Taxa de repost</p>
             <p className="text-3xl font-bold">{kpis.repostRate}</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/5 border-white/5">
+        <Card className="bg-white/5 border-white/5 text-white">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Videos sem postagem</p>
+            <p className="text-sm text-muted-foreground">Vídeos sem postagem</p>
             <p className="text-3xl font-bold">{kpis.videosWithoutPosts}</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/5 border-white/5">
+        <Card className="bg-white/5 border-white/5 text-white">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Media de postagens por video</p>
+            <p className="text-sm text-muted-foreground">Média de postagens por vídeo</p>
             <p className="text-3xl font-bold">{kpis.avgPostsPerVideo}</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <Card className="bg-white/5 border-white/5">
+        <Card className="bg-white/5 border-white/5 text-white">
           <CardContent className="pt-6">
-            <p className="mb-4 text-base font-semibold">Distribuicao de postagens por rede</p>
+            <p className="mb-4 text-base font-semibold">Distribuição de postagens por rede</p>
 
             {isLoading ? (
               <Loader label="Carregando dados..." />
@@ -345,7 +345,7 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white/5 border-white/5">
+        <Card className="bg-white/5 border-white/5 text-white">
           <CardContent className="pt-6">
             <p className="mb-4 text-base font-semibold">Postagens nos ultimos 7 dias</p>
 
@@ -375,20 +375,20 @@ export default function ReportsPage() {
         </Card>
       </div>
 
-      <Card className="mt-6 bg-white/5 border-white/5">
+      <Card className="mt-6 bg-white/5 border-white/5 text-white">
         <CardContent className="mt-6">
-          <p className="mb-4 text-base font-semibold">Top videos por volume de postagens</p>
+          <p className="mb-4 text-base font-semibold">Top vídeos por volume de postagens</p>
 
           {isLoading ? (
             <Loader label="Carregando dados..." />
           ) : topVideos.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Sem videos com postagens neste filtro.</p>
+            <p className="text-sm text-muted-foreground">Sem vídeos com postagens neste filtro.</p>
           ) : (
             <div className="overflow-x-auto rounded-md border border-white/10 bg-black/20">
               <table className="w-full text-sm">
                 <thead className="bg-white text-slate-600">
                   <tr>
-                    <th className="px-4 py-3 text-left font-medium">Video</th>
+                    <th className="px-4 py-3 text-left font-medium">Vídeo</th>
                     <th className="px-4 py-3 text-left font-medium">Cadastro</th>
                     <th className="px-4 py-3 text-left font-medium">Redes</th>
                     <th className="px-4 py-3 text-left font-medium">Postagens</th>

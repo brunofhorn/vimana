@@ -62,7 +62,7 @@ export default function VideoEditPage() {
 
   return (
     <div>
-      <TitlePage title="Editar Video" />
+      <TitlePage title="Editar Vídeo" />
 
       <Card className="bg-white/5 border-white/5">
         <CardContent className="mt-6">
