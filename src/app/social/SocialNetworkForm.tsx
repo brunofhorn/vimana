@@ -9,6 +9,7 @@ import { useSocialNetworkContext } from "@/context/SocialNetworkContext";
 import { SocialNetworkFormCreateSchema, SocialNetworksFormCreateValues } from "@/schemas/social";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import { FiCheck, FiLoader } from "react-icons/fi";
 import { toast } from "sonner";
 
 export function SocialNetworkForm() {
@@ -83,7 +84,7 @@ export function SocialNetworkForm() {
                 placeholder="Selecione o icone"
                 searchPlaceholder="Buscar rede social..."
                 groupLabel="Redes sociais"
-                className="w-full"
+                className="w-full placeholder:text-white text-white"
               />
             )}
           />
@@ -92,11 +93,21 @@ export function SocialNetworkForm() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Cadastrando..." : "Criar"}
+        <Button type="submit" variant={"default"} disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <FiLoader />
+              <span>Cadastrando...</span>
+            </>
+          ) : (
+            <>
+              <FiCheck />
+              <span>Criar</span>
+            </>
+          )}
         </Button>
         <Button type="button" variant="outline" onClick={() => form.reset()} disabled={isSubmitting}>
-          Cancelar
+          <span>Cancelar</span>
         </Button>
       </div>
     </form>

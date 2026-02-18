@@ -9,6 +9,8 @@ import { SocialNetworkFormCreateSchema, SocialNetworksFormCreateValues } from "@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { CiEraser } from "react-icons/ci";
+import { FiCheck, FiLoader } from "react-icons/fi";
 import { toast } from "sonner";
 
 export function SocialNetworkEditDialog({ editing, setEditing }: SocialNetworkEditDialogProps) {
@@ -69,20 +71,21 @@ export function SocialNetworkEditDialog({ editing, setEditing }: SocialNetworkEd
         <Modal.Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
             <Modal.DialogContent className="sm:max-w-lg">
                 <Modal.DialogHeader>
-                    <Modal.DialogTitle>Editar rede social</Modal.DialogTitle>
+                    <Modal.DialogTitle className="text-primary">Editar rede social</Modal.DialogTitle>
                 </Modal.DialogHeader>
 
                 {editing && (
                     <form id="edit-social" onSubmit={handleSubmit(handleSaveEdit)} className="space-y-4">
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium">Nome</label>
+                                <label className="text-sm text-foreground font-medium">Nome</label>
                                 <Input
                                     id="name"
                                     placeholder="Ex: YouTube, Instagram, TikTok"
                                     defaultValue={editing.name}
                                     minLength={2}
                                     {...register("name")}
+                                    className="text-foreground"
                                 />
                                 {errors.name && (
                                     <span className="text-xs text-red-600">{errors.name.message}</span>
@@ -90,15 +93,22 @@ export function SocialNetworkEditDialog({ editing, setEditing }: SocialNetworkEd
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium">URL</label>
-                                <Input id="url" type="url" defaultValue={editing.url} placeholder="https://..." {...register("url")} />
+                                <label className="text-sm text-foreground font-medium">URL</label>
+                                <Input
+                                    id="url"
+                                    type="url"
+                                    defaultValue={editing.url}
+                                    placeholder="https://..."
+                                    {...register("url")}
+                                    className="text-foreground"
+                                />
                                 {errors.url && (
                                     <span className="text-xs text-red-600">{errors.url.message}</span>
                                 )}
                             </div>
 
                             <div className="sm:col-span-2 flex flex-col gap-2">
-                                <label className="text-sm font-medium">Ícone</label>
+                                <label className="text-sm text-foreground font-medium">Ícone</label>
                                 <Controller
                                     name="icon"
                                     control={control}
@@ -107,6 +117,7 @@ export function SocialNetworkEditDialog({ editing, setEditing }: SocialNetworkEd
                                             selectedIcon={field.value}
                                             onIconSelect={(value) => field.onChange(value)}
                                             placeholder="Selecione o ícone"
+                                            className="text-foreground border border-foreground"
                                         />
                                     )}
                                 />
@@ -119,11 +130,22 @@ export function SocialNetworkEditDialog({ editing, setEditing }: SocialNetworkEd
                 )}
 
                 <Modal.DialogFooter>
-                    <Button variant="outline" onClick={() => setEditing(null)} disabled={isEditing}>
-                        Cancelar
+                    <Button variant="destructive" onClick={() => setEditing(null)} disabled={isEditing}>
+                        <CiEraser />
+                        <span>Cancelar</span>
                     </Button>
                     <Button form="edit-social" type="submit" disabled={isEditing}>
-                        {isEditing ? "Salvando..." : "Salvar"}
+                        {isEditing ? (
+                            <>
+                                <FiLoader />
+                                <span>Salvando...</span>
+                            </>
+                        ) : (
+                            <>
+                                <FiCheck />
+                                <span>Salvar</span>
+                            </>
+                        )}
                     </Button>
                 </Modal.DialogFooter>
             </Modal.DialogContent>
