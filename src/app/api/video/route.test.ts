@@ -145,6 +145,23 @@ describe("GET /api/video", () => {
     expect(body.pageSize).toBe("ALL");
   });
 
+  it("filters videos missing posting on selected social network", async () => {
+    mocks.findMany.mockResolvedValueOnce([]);
+    mocks.count.mockResolvedValueOnce(0);
+
+    await GET(
+      makeReq("http://localhost/api/video?social=sn1&socialMode=MISSING")
+    );
+
+    expect(mocks.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          links: { none: { socialnetwork_id: "sn1" } },
+        }),
+      })
+    );
+  });
+
   it("delegates to handleErrorResponse when GET fails", async () => {
     const fallback = Response.json(
       { message: "fallback from handler" },

@@ -11,6 +11,7 @@ import { useVideoContext } from "@/context/VideoContext"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { FiX } from "react-icons/fi"
+import { SocialFilterMode } from "@/interfaces/videos"
 
 type FormShape = { social: string };
 
@@ -56,12 +57,42 @@ export default function VideoTableFilter() {
                         onIconSelect={(v) => {
                             const mapped = v === "ALL" ? "" : v;
                             field.onChange(mapped);
-                            patchFilters({ social: mapped, page: 1 });
+                            patchFilters({
+                                social: mapped,
+                                socialMode: "HAS",
+                                page: 1,
+                            });
                         }}
                         placeholder="Filtrar por rede social"
                     />
                 )}
             />
+
+            <Select
+                value={filters.socialMode}
+                onValueChange={(v) =>
+                    patchFilters({
+                        socialMode: v as SocialFilterMode,
+                        page: 1,
+                    })
+                }
+                disabled={!filters.social}
+            >
+                <SelectTrigger className="w-1/6 placeholder:text-white text-white">
+                    <SelectValue placeholder="Status da rede" />
+                </SelectTrigger>
+                <SelectContent className="max-h-80 p-0 bg-white text-slate-900 border-slate-200">
+                    <SelectGroup>
+                        <SelectLabel>Status na rede</SelectLabel>
+                        <SelectItem value="HAS" className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">
+                            Com postagem
+                        </SelectItem>
+                        <SelectItem value="MISSING" className="text-slate-900 focus:bg-slate-100 focus:text-slate-900">
+                            Sem postagem
+                        </SelectItem>
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
 
             <div className="relative w-[200px]">
                 <InputDatePicker value={filters.postedDate} onChange={(d) => patchFilters({ postedDate: d, page: 1 })} className="w-50" />

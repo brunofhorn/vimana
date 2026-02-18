@@ -16,6 +16,7 @@ export async function getVideos(
 
   if (query.query) params.set("query", query.query);
   if (query.social) params.set("social", query.social);
+  if (query.socialMode) params.set("socialMode", query.socialMode);
   if (query.postedDate) params.set("postedDate", query.postedDate);
   if (query.publi) params.set("publi", query.publi);
   if (query.repost) params.set("repost", query.repost);

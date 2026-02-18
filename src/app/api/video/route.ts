@@ -54,6 +54,7 @@ export async function GET(req: NextRequest) {
 
     const query = (sp.get("query") ?? "").trim();
     const social = (sp.get("social") ?? "").trim();
+    const socialMode = sp.get("socialMode") === "MISSING" ? "MISSING" : "HAS";
     const postedDate = (sp.get("postedDate") ?? "").trim();
     const publi = parseYesNo(sp.get("publi"));
     const repost = parseYesNo(sp.get("repost"));
@@ -88,7 +89,10 @@ export async function GET(req: NextRequest) {
     }
 
     if (social) {
-      where.links = { some: { socialnetwork_id: social } };
+      where.links =
+        socialMode === "MISSING"
+          ? { none: { socialnetwork_id: social } }
+          : { some: { socialnetwork_id: social } };
     }
 
     if (postedDate) {
@@ -99,7 +103,9 @@ export async function GET(req: NextRequest) {
 
         where.links = {
           some: {
-            ...(social ? { socialnetwork_id: social } : {}),
+            ...(social && socialMode !== "MISSING"
+              ? { socialnetwork_id: social }
+              : {}),
             posted_at: {
               gte: d,
               lt: end,

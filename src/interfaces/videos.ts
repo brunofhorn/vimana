@@ -44,12 +44,14 @@ export interface VideoEditDialogProps {
 }
 
 export type YesNoAll = "" | "S" | "N";
+export type SocialFilterMode = "HAS" | "MISSING";
 
 export type PageSize = 10 | 20 | 50 | 100 | "ALL";
 
 export type VideoFilters = {
   query: string;
   social: string;
+  socialMode: SocialFilterMode;
   postedDate: Date | null;
   publi: YesNoAll;
   repost: YesNoAll;
@@ -83,6 +85,7 @@ export type VideoSocialPutResponse = {
 export type VideoListQuery = {
   query?: string;
   social?: string;
+  socialMode?: SocialFilterMode;
   postedDate?: string;
   publi?: YesNoAll;
   repost?: YesNoAll;

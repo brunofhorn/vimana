@@ -24,6 +24,7 @@ type VideoContextProps = {
 const initialFilters: VideoFilters = {
     query: "",
     social: "",
+    socialMode: "HAS",
     postedDate: null,
     publi: "",
     repost: "",
@@ -60,6 +61,7 @@ export const VideoContextProvider: FC<PropsWithChildren> = ({ children }) => {
         const response = await getVideos({
             query: filters.query,
             social: filters.social,
+            socialMode: filters.social ? filters.socialMode : undefined,
             postedDate,
             publi: filters.publi,
             repost: filters.repost,
