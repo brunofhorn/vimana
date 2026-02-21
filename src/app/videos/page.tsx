@@ -32,8 +32,9 @@ export default function Videos() {
     }, [ensureSocialNetworks, ensureVideos, handleLoadings])
 
     useEffect(() => {
-        handleInitialData()
-    }, [handleInitialData])
+        void handleInitialData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <>

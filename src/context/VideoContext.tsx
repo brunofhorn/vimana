@@ -42,6 +42,8 @@ export const VideoContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const [total, setTotal] = useState(0)
     const [filters, setFilters] = useState<VideoFilters>(initialFilters);
     const backupRef = useRef<IVideo[] | null>(null);
+    const videosRef = useRef<IVideo[] | null>(null);
+    const didInitialLoadRef = useRef(false);
     const inFlightFetchRef = useRef<Promise<void> | null>(null);
     const requestSeqRef = useRef(0);
 
@@ -75,10 +77,11 @@ export const VideoContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
         setVideos(response.items)
         setTotal(response.total)
+        didInitialLoadRef.current = true;
     }, [filters])
 
     const ensureVideos = useCallback(async (force = false) => {
-        if (!force && videos !== null) return;
+        if (!force && videosRef.current !== null) return;
 
         if (inFlightFetchRef.current) {
             await inFlightFetchRef.current;
@@ -94,7 +97,7 @@ export const VideoContextProvider: FC<PropsWithChildren> = ({ children }) => {
         })();
 
         await inFlightFetchRef.current;
-    }, [fetchVideos, videos]);
+    }, [fetchVideos]);
 
     const removeVideo = useCallback(async (id: string) => {
         setVideos(prev => {
@@ -153,10 +156,14 @@ export const VideoContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }, []);
 
     useEffect(() => {
+        videosRef.current = videos;
+    }, [videos]);
+
+    useEffect(() => {
         // Refetch server-side filtering only after the first load was completed.
-        if (videos === null) return;
+        if (!didInitialLoadRef.current) return;
         void fetchVideos();
-    }, [filters, fetchVideos, videos]);
+    }, [filters, fetchVideos]);
 
     return (
         <VideoContext.Provider value={{
