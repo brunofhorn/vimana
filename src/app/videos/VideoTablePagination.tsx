@@ -73,6 +73,7 @@ export default function VideoTablePagination() {
                                 size="sm"
                                 onClick={() => goTo(item)}
                                 aria-current={item === filters.page ? "page" : undefined}
+                                className={item === filters.page ? "text-white" : "text-foreground"}
                             >
                                 {item}
                             </Button>

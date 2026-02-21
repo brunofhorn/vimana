@@ -132,7 +132,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(
 
       e.preventDefault()
 
-      let next = [...tags]
+      const next = [...tags]
       for (const p of parts) {
         if (maxTags !== undefined && next.length >= maxTags) break
         if (dedupe) {

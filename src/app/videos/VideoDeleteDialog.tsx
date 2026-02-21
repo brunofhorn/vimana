@@ -59,7 +59,7 @@ export default function VideoDeleteDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="text-slate-700">
-            Excluir "{videoDeleting?.title}"?
+            Excluir {videoDeleting?.title}?
           </AlertDialogTitle>
           <AlertDialogDescription>
             Esta acao nao pode ser desfeita. O video sera removido permanentemente.

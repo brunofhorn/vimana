@@ -156,7 +156,7 @@ export const VideoContextProvider: FC<PropsWithChildren> = ({ children }) => {
         // Refetch server-side filtering only after the first load was completed.
         if (videos === null) return;
         void fetchVideos();
-    }, [filters, fetchVideos]);
+    }, [filters, fetchVideos, videos]);
 
     return (
         <VideoContext.Provider value={{
