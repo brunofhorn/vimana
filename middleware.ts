@@ -1,5 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 
+type UnauthorizedReason =
+  | "missing_token"
+  | "invalid_authorization_format"
+  | "invalid_token";
+
+function unauthorized(reason: UnauthorizedReason) {
+  return NextResponse.json(
+    {
+      message: "Não autorizado.",
+      reason,
+    },
+    { status: 401 }
+  );
+}
+
 export function middleware(req: NextRequest) {
   const expectedToken = process.env.API_AUTH_TOKEN;
 
@@ -15,18 +30,23 @@ export function middleware(req: NextRequest) {
   }
 
   const authorization = req.headers.get("authorization");
+  const hasAuthorizationHeader = authorization !== null;
   const bearerToken = authorization?.startsWith("Bearer ")
     ? authorization.slice("Bearer ".length).trim()
     : null;
   const headerToken = req.headers.get("x-api-token")?.trim() ?? null;
 
+  if (!bearerToken && !headerToken) {
+    if (hasAuthorizationHeader) {
+      return unauthorized("invalid_authorization_format");
+    }
+    return unauthorized("missing_token");
+  }
+
   const providedToken = bearerToken ?? headerToken;
 
-  if (!providedToken || providedToken !== expectedToken) {
-    return NextResponse.json(
-      { message: "Não autorizado." },
-      { status: 401 }
-    );
+  if (providedToken !== expectedToken) {
+    return unauthorized("invalid_token");
   }
 
   return NextResponse.next();
